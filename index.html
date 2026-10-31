@@ -916,11 +916,8 @@ function filterBeasiswa() {
 }
 
 function showDetail(nama) {
-    alert(
-        "Informasi Beasiswa: " + nama +
-        "\n\nPersyaratan, jadwal, dan tautan pendaftaran " +
-        "akan dikembangkan pada tahap berikutnya."
-    );
+    window.location.href =
+        "detail.html?nama=" + encodeURIComponent(nama);
 }
 </script>
 
