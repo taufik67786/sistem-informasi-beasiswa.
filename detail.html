@@ -1,0 +1,603 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Detail Beasiswa - BeasiswaKu</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --primary: #1764cc;
+    --dark: #102344;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --light: #f4f8ff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--dark);
+    background: #f8faff;
+}
+
+a {
+    text-decoration: none;
+}
+
+.navbar {
+    background: white;
+    padding: 18px 7%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+}
+
+.logo {
+    font-size: 23px;
+    font-weight: 800;
+    color: var(--dark);
+}
+
+.logo span {
+    color: var(--primary);
+}
+
+.back {
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 35px auto;
+    padding: 0 20px;
+}
+
+.breadcrumb {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 25px;
+}
+
+.breadcrumb a {
+    color: var(--primary);
+}
+
+.header {
+    background: linear-gradient(120deg, #eaf3ff, #fff);
+    border: 1px solid #dbeafe;
+    border-radius: 20px;
+    padding: 35px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    margin-bottom: 25px;
+}
+
+.icon {
+    width: 100px;
+    height: 100px;
+    background: white;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 45px;
+    flex-shrink: 0;
+}
+
+.header h1 {
+    font-size: 30px;
+    margin-bottom: 12px;
+}
+
+.header p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.tag {
+    padding: 7px 12px;
+    border-radius: 8px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 25px;
+}
+
+.content, .sidebar {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+}
+
+.content h2 {
+    font-size: 19px;
+    margin-bottom: 15px;
+}
+
+.content p {
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.9;
+    margin-bottom: 25px;
+}
+
+.content ul {
+    padding-left: 22px;
+    margin-bottom: 25px;
+}
+
+.content li {
+    color: #475569;
+    font-size: 14px;
+    line-height: 2;
+}
+
+.sidebar h3 {
+    font-size: 17px;
+    margin-bottom: 20px;
+}
+
+.info {
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.info:last-of-type {
+    border-bottom: none;
+}
+
+.info small {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 7px;
+}
+
+.info strong {
+    font-size: 14px;
+}
+
+.note {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 10px;
+    padding: 13px;
+    color: #9a3412;
+    font-size: 12px;
+    line-height: 1.7;
+    margin: 15px 0;
+}
+
+.btn {
+    display: block;
+    text-align: center;
+    background: var(--primary);
+    color: white;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 12px;
+}
+
+.btn-secondary {
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--dark);
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 40px;
+}
+
+@media (max-width: 750px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .header {
+        padding: 22px;
+        align-items: flex-start;
+    }
+
+    .icon {
+        width: 65px;
+        height: 65px;
+        font-size: 30px;
+    }
+
+    .header h1 {
+        font-size: 23px;
+    }
+
+    .content, .sidebar {
+        padding: 22px;
+    }
+}
+
+@media (max-width: 450px) {
+    .header {
+        flex-direction: column;
+    }
+
+    .navbar {
+        padding: 15px 5%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <a href="index.html" class="logo">
+        🎓 Beasiswa<span>Ku</span>
+    </a>
+
+    <a href="index.html" class="back">
+        ← Kembali
+    </a>
+</header>
+
+<main class="container">
+
+    <div class="breadcrumb">
+        <a href="index.html">Beranda</a>
+        /
+        <a href="index.html#beasiswa">Cari Beasiswa</a>
+        /
+        Detail Beasiswa
+    </div>
+
+    <section class="header">
+
+        <div class="icon" id="icon">🎓</div>
+
+        <div>
+            <h1 id="nama">Nama Beasiswa</h1>
+
+            <p id="penyelenggara">
+                Informasi penyelenggara beasiswa
+            </p>
+
+            <div class="tags">
+                <span class="tag" id="jenjang">S1 / S2 / S3</span>
+                <span class="tag" id="kategori">Pendidikan</span>
+            </div>
+        </div>
+
+    </section>
+
+    <div class="layout">
+
+        <section class="content">
+
+            <h2>Tentang Beasiswa</h2>
+
+            <p id="deskripsi"></p>
+
+            <h2>Persyaratan Pendaftaran</h2>
+
+            <ul id="persyaratan"></ul>
+
+            <h2>Dokumen yang Diperlukan</h2>
+
+            <ul id="dokumen"></ul>
+
+            <h2>Informasi Penting</h2>
+
+            <p>
+                Pastikan kamu membaca seluruh ketentuan
+                pendaftaran melalui situs resmi penyelenggara.
+                Persyaratan dan jadwal dapat berubah
+                sesuai kebijakan penyelenggara.
+            </p>
+
+        </section>
+
+        <aside class="sidebar">
+
+            <h3>Informasi Pendaftaran</h3>
+
+            <div class="info">
+                <small>Penyelenggara</small>
+                <strong id="infoPenyelenggara"></strong>
+            </div>
+
+            <div class="info">
+                <small>Jenjang Pendidikan</small>
+                <strong id="infoJenjang"></strong>
+            </div>
+
+            <div class="info">
+                <small>Periode Pendaftaran</small>
+                <strong>Periksa situs resmi</strong>
+            </div>
+
+            <div class="info">
+                <small>Status</small>
+                <strong>Informasi tersedia</strong>
+            </div>
+
+            <div class="note">
+                ⚠️ Jadwal dan status pembukaan beasiswa
+                harus dikonfirmasi melalui sumber resmi.
+            </div>
+
+            <a href="#" target="_blank"
+            rel="noopener noreferrer"
+            class="btn" id="linkResmi">
+                Kunjungi Situs Resmi →
+            </a>
+
+            <a href="index.html"
+            class="btn btn-secondary">
+                Kembali ke Beranda
+            </a>
+
+        </aside>
+
+    </div>
+
+</main>
+
+<footer>
+    © 2026 BeasiswaKu - Portal Informasi Beasiswa
+</footer>
+
+<script>
+const dataBeasiswa = {
+
+    "LPDP": {
+        nama: "Beasiswa LPDP",
+        penyelenggara: "Lembaga Pengelola Dana Pendidikan",
+        jenjang: "S2 / S3",
+        kategori: "Dalam Negeri & Luar Negeri",
+        icon: "🎓",
+        deskripsi:
+            "Beasiswa LPDP merupakan program pendanaan pendidikan " +
+            "untuk mendukung masyarakat Indonesia melanjutkan " +
+            "pendidikan magister dan doktoral. Program ini " +
+            "dikelola oleh Lembaga Pengelola Dana Pendidikan.",
+        persyaratan: [
+            "Warga Negara Indonesia.",
+            "Memenuhi persyaratan jenjang pendidikan.",
+            "Memiliki ijazah sesuai ketentuan.",
+            "Memenuhi persyaratan kemampuan bahasa.",
+            "Mengikuti tahapan seleksi yang ditentukan."
+        ],
+        dokumen: [
+            "Kartu identitas.",
+            "Ijazah dan transkrip nilai.",
+            "Sertifikat kemampuan bahasa jika diwajibkan.",
+            "Surat rekomendasi sesuai ketentuan.",
+            "Dokumen tambahan sesuai program."
+        ],
+        url: "https://lpdp.kemenkeu.go.id/"
+    },
+
+    "Beasiswa Unggulan": {
+        nama: "Beasiswa Unggulan",
+        penyelenggara: "Kementerian Pendidikan",
+        jenjang: "S1 / S2 / S3",
+        kategori: "Dalam Negeri",
+        icon: "📚",
+        deskripsi:
+            "Beasiswa Unggulan merupakan program bantuan " +
+            "pendidikan untuk mendukung mahasiswa berprestasi " +
+            "dan masyarakat yang memenuhi persyaratan program.",
+        persyaratan: [
+            "Memenuhi persyaratan kewarganegaraan.",
+            "Memenuhi persyaratan akademik.",
+            "Memiliki dokumen pendidikan yang sesuai.",
+            "Mengikuti seleksi sesuai ketentuan."
+        ],
+        dokumen: [
+            "Kartu identitas.",
+            "Ijazah dan transkrip nilai.",
+            "Surat rekomendasi jika diwajibkan.",
+            "Dokumen pendukung sesuai ketentuan."
+        ],
+        url: "https://beasiswaunggulan.kemdikbud.go.id/"
+    },
+
+    "Djarum Beasiswa Plus": {
+        nama: "Djarum Beasiswa Plus",
+        penyelenggara: "Djarum Foundation",
+        jenjang: "Mahasiswa S1",
+        kategori: "Prestasi",
+        icon: "🏆",
+        deskripsi:
+            "Djarum Beasiswa Plus merupakan program " +
+            "pengembangan mahasiswa berprestasi yang " +
+            "mencakup dukungan pendidikan dan pengembangan " +
+            "karakter serta kepemimpinan.",
+        persyaratan: [
+            "Mahasiswa aktif sesuai ketentuan program.",
+            "Memenuhi persyaratan akademik.",
+            "Memenuhi persyaratan semester.",
+            "Mengikuti proses seleksi."
+        ],
+        dokumen: [
+            "Kartu mahasiswa.",
+            "Transkrip nilai.",
+            "Kartu identitas.",
+            "Dokumen pendukung sesuai ketentuan."
+        ],
+        url: "https://djarumbeasiswaplus.org/"
+    },
+
+    "Chevening": {
+        nama: "Chevening Scholarship",
+        penyelenggara: "Pemerintah Inggris",
+        jenjang: "S2",
+        kategori: "Luar Negeri",
+        icon: "🌍",
+        deskripsi:
+            "Chevening Scholarship merupakan program " +
+            "beasiswa pemerintah Inggris untuk mendukung " +
+            "calon pemimpin melanjutkan studi magister " +
+            "di universitas Inggris.",
+        persyaratan: [
+            "Memenuhi persyaratan kewarganegaraan.",
+            "Memiliki gelar sarjana sesuai ketentuan.",
+            "Memenuhi persyaratan pengalaman kerja.",
+            "Memilih program studi yang sesuai."
+        ],
+        dokumen: [
+            "Dokumen identitas.",
+            "Ijazah dan transkrip nilai.",
+            "Dokumen pengalaman kerja.",
+            "Dokumen aplikasi sesuai ketentuan."
+        ],
+        url: "https://www.chevening.org/"
+    },
+
+    "MEXT": {
+        nama: "Beasiswa MEXT",
+        penyelenggara: "Pemerintah Jepang",
+        jenjang: "S1 / S2 / S3",
+        kategori: "Luar Negeri",
+        icon: "🇯🇵",
+        deskripsi:
+            "Beasiswa MEXT atau Monbukagakusho merupakan " +
+            "program beasiswa pemerintah Jepang bagi " +
+            "pelajar dan mahasiswa internasional.",
+        persyaratan: [
+            "Memenuhi persyaratan kewarganegaraan.",
+            "Memenuhi persyaratan akademik.",
+            "Memenuhi persyaratan usia sesuai program.",
+            "Mengikuti tahapan seleksi."
+        ],
+        dokumen: [
+            "Formulir pendaftaran.",
+            "Ijazah dan transkrip nilai.",
+            "Surat rekomendasi.",
+            "Dokumen pendukung sesuai program."
+        ],
+        url: "https://www.studyinjapan.go.jp/en/"
+    },
+
+    "KIP Kuliah": {
+        nama: "KIP Kuliah",
+        penyelenggara: "Pemerintah Indonesia",
+        jenjang: "S1 / D3 / D4",
+        kategori: "Pendidikan",
+        icon: "🎒",
+        deskripsi:
+            "KIP Kuliah merupakan bantuan pendidikan " +
+            "bagi calon mahasiswa yang memiliki potensi " +
+            "akademik baik dan keterbatasan ekonomi.",
+        persyaratan: [
+            "Memenuhi persyaratan calon mahasiswa.",
+            "Memenuhi ketentuan ekonomi program.",
+            "Memiliki dokumen pendidikan yang sesuai.",
+            "Mengikuti proses seleksi."
+        ],
+        dokumen: [
+            "Kartu identitas.",
+            "Dokumen pendidikan.",
+            "Dokumen pendukung kondisi ekonomi.",
+            "Dokumen tambahan sesuai ketentuan."
+        ],
+        url: "https://kip-kuliah.kemdiktisaintek.go.id/"
+    }
+};
+
+const params = new URLSearchParams(window.location.search);
+const namaPilihan = params.get("nama");
+
+const beasiswa = dataBeasiswa[namaPilihan];
+
+if (beasiswa) {
+
+    document.title = beasiswa.nama + " - BeasiswaKu";
+
+    document.getElementById("nama").textContent =
+        beasiswa.nama;
+
+    document.getElementById("penyelenggara").textContent =
+        beasiswa.penyelenggara;
+
+    document.getElementById("infoPenyelenggara").textContent =
+        beasiswa.penyelenggara;
+
+    document.getElementById("jenjang").textContent =
+        beasiswa.jenjang;
+
+    document.getElementById("infoJenjang").textContent =
+        beasiswa.jenjang;
+
+    document.getElementById("kategori").textContent =
+        beasiswa.kategori;
+
+    document.getElementById("icon").textContent =
+        beasiswa.icon;
+
+    document.getElementById("deskripsi").textContent =
+        beasiswa.deskripsi;
+
+    document.getElementById("linkResmi").href =
+        beasiswa.url;
+
+    beasiswa.persyaratan.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+
+        document.getElementById("persyaratan")
+            .appendChild(li);
+    });
+
+    beasiswa.dokumen.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+
+        document.getElementById("dokumen")
+            .appendChild(li);
+    });
+
+} else {
+
+    document.getElementById("nama").textContent =
+        "Beasiswa Tidak Ditemukan";
+
+    document.getElementById("deskripsi").textContent =
+        "Silakan kembali ke halaman beranda dan pilih beasiswa yang tersedia.";
+}
+</script>
+
+</body>
+</html>
