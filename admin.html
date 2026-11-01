@@ -1,0 +1,649 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin BeasiswaKu</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --primary: #1764cc;
+    --dark: #102344;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --light: #f4f8ff;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #f5f7fb;
+    color: var(--dark);
+}
+
+.navbar {
+    background: white;
+    padding: 18px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.logo span {
+    color: var(--primary);
+}
+
+.navbar a {
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 35px auto;
+    padding: 0 20px;
+}
+
+.heading {
+    margin-bottom: 25px;
+}
+
+.heading h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.heading p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: white;
+    padding: 25px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+}
+
+.stat-card p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.stat-card h2 {
+    color: var(--primary);
+    font-size: 28px;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.panel {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 25px;
+}
+
+.panel h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    outline: none;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--primary);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.btn {
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    background: var(--primary);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn:hover {
+    opacity: .85;
+}
+
+.btn-secondary {
+    background: #e2e8f0;
+    color: var(--dark);
+}
+
+.btn-danger {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 600px;
+}
+
+th, td {
+    padding: 15px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    background: var(--light);
+    color: var(--muted);
+    font-size: 12px;
+}
+
+td {
+    line-height: 1.6;
+}
+
+.actions {
+    display: flex;
+    gap: 7px;
+}
+
+.actions button {
+    padding: 8px 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 11px;
+}
+
+.edit {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.delete {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.notice {
+    padding: 14px;
+    border-radius: 9px;
+    background: #fff7ed;
+    color: #9a3412;
+    font-size: 12px;
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 900px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .heading h1 {
+        font-size: 23px;
+    }
+
+    .panel {
+        padding: 18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="logo">🎓 Beasiswa<span>Ku</span> Admin</div>
+
+    <a href="index.html">← Kembali ke Website</a>
+</header>
+
+<main class="container">
+
+    <section class="heading">
+        <h1>Dashboard Admin</h1>
+        <p>Kelola informasi beasiswa melalui halaman ini.</p>
+    </section>
+
+    <section class="stats">
+
+        <div class="stat-card">
+            <p>Total Beasiswa</p>
+            <h2 id="totalBeasiswa">0</h2>
+        </div>
+
+        <div class="stat-card">
+            <p>Dalam Negeri</p>
+            <h2 id="totalDalam">0</h2>
+        </div>
+
+        <div class="stat-card">
+            <p>Luar Negeri</p>
+            <h2 id="totalLuar">0</h2>
+        </div>
+
+    </section>
+
+    <div class="notice">
+        ⚠️ Versi demonstrasi: data disimpan di browser menggunakan
+        localStorage. Belum ada login admin dan database online.
+    </div>
+
+    <section class="layout">
+
+        <div class="panel">
+
+            <h2 id="formTitle">Tambah Beasiswa</h2>
+
+            <form id="formBeasiswa">
+
+                <input type="hidden" id="editId">
+
+                <div class="form-group">
+                    <label>Nama Beasiswa</label>
+                    <input type="text" id="nama"
+                    placeholder="Contoh: Beasiswa ABC"
+                    required>
+                </div>
+
+                <div class="form-group">
+                    <label>Penyelenggara</label>
+                    <input type="text" id="penyelenggara"
+                    placeholder="Nama penyelenggara"
+                    required>
+                </div>
+
+                <div class="form-group">
+                    <label>Jenjang Pendidikan</label>
+                    <select id="jenjang" required>
+                        <option value="">Pilih jenjang</option>
+                        <option>SMA</option>
+                        <option>D3 / D4</option>
+                        <option>S1</option>
+                        <option>S2</option>
+                        <option>S3</option>
+                        <option>S1 / S2 / S3</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Kategori</label>
+                    <select id="kategori" required>
+                        <option value="">Pilih kategori</option>
+                        <option>Dalam Negeri</option>
+                        <option>Luar Negeri</option>
+                        <option>Prestasi</option>
+                        <option>Pendidikan</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Deskripsi</label>
+                    <textarea id="deskripsi"
+                    placeholder="Deskripsi beasiswa..."
+                    required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Deadline</label>
+                    <input type="date" id="deadline">
+                </div>
+
+                <div class="form-group">
+                    <label>Link Resmi</label>
+                    <input type="url" id="link"
+                    placeholder="https://example.com">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn">
+                        Simpan Beasiswa
+                    </button>
+
+                    <button type="button"
+                    class="btn btn-secondary"
+                    onclick="resetForm()">
+                        Batal
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+        <div class="panel">
+
+            <h2>Daftar Beasiswa</h2>
+
+            <div class="table-wrapper">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama Beasiswa</th>
+                            <th>Penyelenggara</th>
+                            <th>Kategori</th>
+                            <th>Deadline</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tabelBeasiswa"></tbody>
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<script>
+const STORAGE_KEY = "beasiswaKuData";
+
+const dataAwal = [
+    {
+        id: 1,
+        nama: "Beasiswa LPDP",
+        penyelenggara: "LPDP",
+        jenjang: "S2 / S3",
+        kategori: "Dalam Negeri",
+        deskripsi: "Program beasiswa pendidikan magister dan doktoral.",
+        deadline: "",
+        link: "https://lpdp.kemenkeu.go.id/"
+    },
+    {
+        id: 2,
+        nama: "Beasiswa Unggulan",
+        penyelenggara: "Kemendikbud",
+        jenjang: "S1 / S2 / S3",
+        kategori: "Pendidikan",
+        deskripsi: "Program bantuan pendidikan bagi mahasiswa.",
+        deadline: "",
+        link: "https://beasiswaunggulan.kemdikbud.go.id/"
+    },
+    {
+        id: 3,
+        nama: "Djarum Beasiswa Plus",
+        penyelenggara: "Djarum Foundation",
+        jenjang: "S1",
+        kategori: "Prestasi",
+        deskripsi: "Program beasiswa bagi mahasiswa berprestasi.",
+        deadline: "",
+        link: "https://djarumbeasiswaplus.org/"
+    }
+];
+
+let beasiswaList = loadData();
+
+function loadData() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if (saved !== null) {
+        try {
+            const data = JSON.parse(saved);
+
+            if (Array.isArray(data)) {
+                return data;
+            }
+        } catch (error) {
+            console.error("Data tidak dapat dibaca.", error);
+        }
+    }
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(dataAwal)
+    );
+
+    return [...dataAwal];
+}
+
+function saveData() {
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(beasiswaList)
+    );
+}
+
+function renderData() {
+    const tbody = document.getElementById("tabelBeasiswa");
+
+    tbody.innerHTML = "";
+
+    beasiswaList.forEach(item => {
+
+        const tr = document.createElement("tr");
+
+        const values = [
+            item.nama,
+            item.penyelenggara,
+            item.kategori,
+            item.deadline || "-"
+        ];
+
+        values.forEach(value => {
+            const td = document.createElement("td");
+            td.textContent = value;
+            tr.appendChild(td);
+        });
+
+        const tdAksi = document.createElement("td");
+        const actions = document.createElement("div");
+
+        actions.className = "actions";
+
+        const editButton = document.createElement("button");
+        editButton.className = "edit";
+        editButton.textContent = "Edit";
+        editButton.onclick = () => editData(item.id);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "delete";
+        deleteButton.textContent = "Hapus";
+        deleteButton.onclick = () => deleteData(item.id);
+
+        actions.append(editButton, deleteButton);
+        tdAksi.appendChild(actions);
+        tr.appendChild(tdAksi);
+
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById("totalBeasiswa").textContent =
+        beasiswaList.length;
+
+    document.getElementById("totalDalam").textContent =
+        beasiswaList.filter(item =>
+            item.kategori === "Dalam Negeri"
+        ).length;
+
+    document.getElementById("totalLuar").textContent =
+        beasiswaList.filter(item =>
+            item.kategori === "Luar Negeri"
+        ).length;
+}
+
+document.getElementById("formBeasiswa")
+.addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+    const editId = document.getElementById("editId").value;
+
+    const data = {
+        id: editId ? Number(editId) : Date.now(),
+
+        nama: document.getElementById("nama").value.trim(),
+
+        penyelenggara:
+            document.getElementById("penyelenggara").value.trim(),
+
+        jenjang: document.getElementById("jenjang").value,
+
+        kategori: document.getElementById("kategori").value,
+
+        deskripsi:
+            document.getElementById("deskripsi").value.trim(),
+
+        deadline: document.getElementById("deadline").value,
+
+        link: document.getElementById("link").value.trim()
+    };
+
+    if (editId) {
+
+        beasiswaList = beasiswaList.map(item =>
+            item.id === Number(editId) ? data : item
+        );
+
+        alert("Informasi beasiswa berhasil diperbarui.");
+
+    } else {
+
+        beasiswaList.push(data);
+
+        alert("Beasiswa berhasil ditambahkan.");
+    }
+
+    saveData();
+    renderData();
+    resetForm();
+});
+
+function editData(id) {
+
+    const item = beasiswaList.find(
+        beasiswa => beasiswa.id === id
+    );
+
+    if (!item) return;
+
+    document.getElementById("editId").value = item.id;
+    document.getElementById("nama").value = item.nama;
+    document.getElementById("penyelenggara").value =
+        item.penyelenggara;
+    document.getElementById("jenjang").value = item.jenjang;
+    document.getElementById("kategori").value = item.kategori;
+    document.getElementById("deskripsi").value = item.deskripsi;
+    document.getElementById("deadline").value = item.deadline;
+    document.getElementById("link").value = item.link;
+
+    document.getElementById("formTitle").textContent =
+        "Edit Beasiswa";
+
+    document.querySelector(".layout").scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
+function deleteData(id) {
+
+    const konfirmasi = confirm(
+        "Apakah kamu yakin ingin menghapus beasiswa ini?"
+    );
+
+    if (!konfirmasi) return;
+
+    beasiswaList = beasiswaList.filter(
+        item => item.id !== id
+    );
+
+    saveData();
+    renderData();
+
+    alert("Beasiswa berhasil dihapus.");
+}
+
+function resetForm() {
+
+    document.getElementById("formBeasiswa").reset();
+
+    document.getElementById("editId").value = "";
+
+    document.getElementById("formTitle").textContent =
+        "Tambah Beasiswa";
+}
+
+renderData();
+</script>
+
+</body>
+</html>
