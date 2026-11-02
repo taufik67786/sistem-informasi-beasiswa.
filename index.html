@@ -905,18 +905,16 @@
       }
 
       const item = {
-        nama: $("nama").value.trim(),
-        penyelenggara: $("penyelenggara").value.trim(),
-        jenjang: $("jenjang").value,
-        kategori: $("kategori").value,
-        icon: $("icon").value.trim() || "🎓",
-        deskripsi: $("deskripsi").value.trim(),
-        persyaratan: linesToArray($("persyaratan").value),
-        dokumen: linesToArray($("dokumen").value),
-        deadline: $("deadline").value || null,
-        link: $("link").value.trim() || null
-      };
-
+  nama: $("nama").value.trim(),
+  penyelenggara: $("penyelenggara").value.trim(),
+  jenjang: $("jenjang").value.trim(),
+  kategori: $("kategori").value,
+  deskripsi: $("deskripsi").value.trim(),
+  persyaratan: linesToArray($("persyaratan").value),
+  dokumen: linesToArray($("dokumen").value),
+  deadline: $("deadline").value || null,
+  link: $("link").value.trim() || null
+};
       const id = $("editId").value;
       let result;
 
