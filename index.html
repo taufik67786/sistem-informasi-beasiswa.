@@ -145,75 +145,32 @@ footer p{margin:0 0 6px}
 <footer>
   <div class="wrap">
     <p><strong>Beasiswaku</strong> – dibuat untuk membantu pelajar Indonesia menemukan peluang belajar.</p>
-    <p>Data di halaman ini hanya contoh. Selalu cek tanggal dan syarat terbaru di situs resmi penyelenggara.</p>
+    <p>Selalu cek tanggal dan syarat terbaru di situs resmi penyelenggara. <a href="admin.html">Admin</a></p>
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
 <script>
-/* ============================================================
-   DATA BEASISWA – ubah bagian ini untuk menambah/mengganti isi.
-   tutup  : tanggal penutupan, format TAHUN-BULAN-TANGGAL
-   jenjang: gabungan "S1", "S2", "S3"
-   lokasi : "Dalam negeri" atau "Luar negeri"
-   ============================================================ */
-const BEASISWA = [
-  {
-    nama: "LPDP Reguler",
-    penyelenggara: "Kementerian Keuangan RI",
-    deskripsi: "Biaya kuliah, tunjangan hidup, dan biaya riset untuk studi S2 dan S3 di dalam maupun luar negeri.",
-    jenjang: ["S2","S3"], lokasi: "Dalam negeri", negara: "Indonesia & luar negeri",
-    tutup: "2027-03-31", url: "https://lpdp.kemenkeu.go.id"
-  },
-  {
-    nama: "KIP Kuliah",
-    penyelenggara: "Kemendikbudristek",
-    deskripsi: "Bantuan biaya pendidikan dan biaya hidup bagi lulusan SMA/SMK berprestasi dari keluarga kurang mampu.",
-    jenjang: ["S1"], lokasi: "Dalam negeri", negara: "Indonesia",
-    tutup: "2027-02-28", url: "https://kip-kuliah.kemdikbud.go.id"
-  },
-  {
-    nama: "Chevening",
-    penyelenggara: "Pemerintah Inggris",
-    deskripsi: "Beasiswa satu tahun untuk program S2 di universitas Inggris, ditujukan bagi calon pemimpin masa depan.",
-    jenjang: ["S2"], lokasi: "Luar negeri", negara: "Inggris",
-    tutup: "2026-11-03", url: "https://www.chevening.org"
-  },
-  {
-    nama: "Australia Awards",
-    penyelenggara: "Pemerintah Australia",
-    deskripsi: "Beasiswa penuh S2 dan S3 di Australia dengan tunjangan hidup dan tiket pulang-pergi.",
-    jenjang: ["S2","S3"], lokasi: "Luar negeri", negara: "Australia",
-    tutup: "2027-04-30", url: "https://www.australiaawardsindonesia.org"
-  },
-  {
-    nama: "MEXT (Monbukagakusho)",
-    penyelenggara: "Pemerintah Jepang",
-    deskripsi: "Beasiswa penuh untuk S1, S2, dan S3 di Jepang, termasuk tunjangan bulanan dan bebas biaya kuliah.",
-    jenjang: ["S1","S2","S3"], lokasi: "Luar negeri", negara: "Jepang",
-    tutup: "2027-05-15", url: "https://www.id.emb-japan.go.jp"
-  },
-  {
-    nama: "Global Korea Scholarship (GKS)",
-    penyelenggara: "Pemerintah Korea Selatan",
-    deskripsi: "Beasiswa penuh dengan kursus bahasa Korea satu tahun, tunjangan hidup, dan biaya kuliah.",
-    jenjang: ["S1","S2","S3"], lokasi: "Luar negeri", negara: "Korea Selatan",
-    tutup: "2027-03-10", url: "https://www.studyinkorea.go.kr"
-  },
-  {
-    nama: "Beasiswa Unggulan",
-    penyelenggara: "Kemendikbudristek",
-    deskripsi: "Beasiswa untuk mahasiswa dan pegawai berprestasi di berbagai jenjang di perguruan tinggi dalam negeri.",
-    jenjang: ["S1","S2","S3"], lokasi: "Dalam negeri", negara: "Indonesia",
-    tutup: "2026-12-20", url: "https://beasiswaunggulan.kemdikbud.go.id"
-  },
-  {
-    nama: "Fulbright",
-    penyelenggara: "AMINEF & Pemerintah AS",
-    deskripsi: "Beasiswa S2 dan S3 di universitas Amerika Serikat dengan pendampingan sebelum keberangkatan.",
-    jenjang: ["S2","S3"], lokasi: "Luar negeri", negara: "Amerika Serikat",
-    tutup: "2026-10-15", url: "https://www.aminef.or.id"
+/* Data beasiswa diambil dari Supabase (tabel "beasiswa").
+   Kelola isinya lewat halaman admin.html. */
+let BEASISWA = [];
+
+async function muat(){
+  const cfg = window.BEASISWAKU_CONFIG || {};
+  hitung.textContent = "Memuat data…";
+  try{
+    const db = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+    const { data, error } = await db.from("beasiswa").select("*").order("tutup");
+    if (error) throw error;
+    BEASISWA = data;
+  }catch(e){
+    console.error(e);
+    hitung.textContent = "Data belum bisa dimuat. Coba muat ulang halaman.";
+    return;
   }
-];
+  render();
+}
 
 const $ = (s) => document.querySelector(s);
 const daftar = $("#daftar"), hitung = $("#hitung"), q = $("#q");
@@ -252,7 +209,7 @@ function render(){
     });
 
   daftar.replaceChildren();
-  hitung.textContent = `Menampilkan ${hasil.length} dari ${BEASISWA.length} beasiswa`;
+  hitung.textContent = BEASISWA.length ? `Menampilkan ${hasil.length} dari ${BEASISWA.length} beasiswa` : "Belum ada beasiswa yang dipublikasikan.";
 
   if (!hasil.length){
     const k = el("li","kosong");
@@ -300,7 +257,7 @@ function render(){
 $("#formCari").addEventListener("submit", e => { e.preventDefault(); render(); });
 q.addEventListener("input", render);
 document.querySelectorAll(".alat input").forEach(i => i.addEventListener("change", render));
-render();
+muat();
 </script>
 </body>
 </html>
