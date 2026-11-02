@@ -1,1166 +1,306 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BeasiswaKu — Informasi Beasiswa</title>
-  <meta name="description" content="Temukan informasi beasiswa terbaru untuk pelajar dan mahasiswa.">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beasiswaku – Cari beasiswa yang cocok untukmu</title>
+<meta name="description" content="Daftar beasiswa dalam dan luar negeri lengkap dengan jenjang, cakupan, dan sisa waktu pendaftaran.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --langit:#E8F1F6;
+  --tinta:#10263F;
+  --laut:#0F6B73;
+  --kunyit:#F2B01E;
+  --kertas:#FFFFFF;
+  --abu:#5A6B7B;
+  --garis:#C9D8E2;
+  --merah:#B4361F;
+  --f-head:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--langit);color:var(--tinta);font:400 1rem/1.6 var(--f-body)}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--kunyit);outline-offset:2px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
 
-  <style>
-    :root {
-      --primary: #3157d5;
-      --primary-dark: #2443b0;
-      --bg: #f5f7fb;
-      --text: #172033;
-      --muted: #697386;
-      --card: #ffffff;
-      --border: #e4e8f0;
-      --green: #13845b;
-      --red: #c0392b;
-    }
+header.top{background:var(--tinta);color:#fff}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:16px 0}
+.brand{font:800 1.35rem/1 var(--f-head);text-decoration:none;letter-spacing:-.01em}
+.brand span{color:var(--kunyit)}
+.nav a.link{font-size:.95rem;text-decoration:none;opacity:.85}
+.nav a.link:hover{opacity:1;text-decoration:underline}
 
-    * { box-sizing: border-box; }
+.hero{padding:48px 0 72px}
+.hero h1{font:800 clamp(2.2rem,6vw,4rem)/1.05 var(--f-head);letter-spacing:-.02em;margin:0 0 16px;max-width:15ch}
+.hero p{max-width:52ch;margin:0 0 28px;font-size:1.1rem;color:#D3E0EA}
+.cari{display:flex;gap:0;max-width:560px;background:#fff;border-radius:10px;overflow:hidden}
+.cari input{flex:1;border:0;padding:16px 18px;font:inherit;color:var(--tinta);min-width:0}
+.cari input:focus-visible{outline-offset:-3px}
+.cari button{border:0;background:var(--kunyit);color:var(--tinta);font:700 1rem var(--f-head);padding:0 22px;cursor:pointer}
+.cari button:hover{background:#E1A00F}
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
+main{padding:0 0 64px}
+.alat{margin-top:-28px;background:var(--kertas);border-radius:12px;padding:18px 20px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;box-shadow:0 8px 24px rgba(16,38,63,.12)}
+.alat legend,.alat .judul{font:700 .95rem var(--f-head);margin-right:4px;padding:0}
+fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.chip span{display:inline-block;padding:6px 14px;border:1.5px solid var(--garis);border-radius:999px;font-size:.92rem;font-weight:500}
+.chip input:checked+span{background:var(--tinta);border-color:var(--tinta);color:#fff}
+.chip input:focus-visible+span{outline:3px solid var(--kunyit);outline-offset:2px}
+.hitung{margin:28px 0 12px;color:var(--abu);font-size:.95rem}
 
-    button, input, select, textarea { font: inherit; }
+.daftar{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.kartu{background:var(--kertas);border-radius:12px;padding:20px 22px;display:grid;grid-template-columns:1fr auto;gap:8px 24px;border-left:6px solid var(--laut)}
+.kartu.segera{border-left-color:var(--kunyit)}
+.kartu.tutup{border-left-color:var(--garis);opacity:.75}
+.kartu h2{font:700 1.25rem/1.25 var(--f-head);margin:0}
+.penyelenggara{color:var(--abu);font-size:.92rem;margin:2px 0 8px}
+.kartu p{margin:0 0 10px;max-width:62ch}
+.tag{display:flex;flex-wrap:wrap;gap:6px;padding:0;margin:0;list-style:none}
+.tag li{font-size:.82rem;background:var(--langit);padding:2px 10px;border-radius:6px}
+.sisi{text-align:right;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:12px}
+.sisa strong{display:block;font:800 1.7rem/1 var(--f-head)}
+.sisa small{color:var(--abu);font-size:.82rem}
+.kartu.tutup .sisa strong{color:var(--abu);font-size:1.1rem}
+.btn{display:inline-block;background:var(--tinta);color:#fff;text-decoration:none;font:600 .92rem var(--f-body);padding:9px 16px;border-radius:8px;white-space:nowrap}
+.btn:hover{background:var(--laut)}
+.kosong{background:var(--kertas);border-radius:12px;padding:32px;text-align:center}
+.kosong button{margin-top:8px;border:0;background:var(--tinta);color:#fff;padding:9px 16px;border-radius:8px;font:inherit;cursor:pointer}
 
-    button {
-      cursor: pointer;
-      border: 0;
-      border-radius: 10px;
-      padding: 11px 16px;
-      background: var(--primary);
-      color: white;
-      font-weight: 600;
-    }
+.tips{margin-top:56px;background:var(--kertas);border-radius:12px;padding:28px}
+.tips h2{font:800 1.5rem/1.2 var(--f-head);margin:0 0 12px}
+.tips ol{margin:0;padding-left:1.2rem;max-width:62ch}
+.tips li{margin-bottom:8px}
+footer{background:var(--tinta);color:#B9CAD8;padding:28px 0;font-size:.9rem}
+footer p{margin:0 0 6px}
 
-    button:hover { background: var(--primary-dark); }
-
-    button.secondary {
-      color: var(--text);
-      background: #eef1f7;
-    }
-
-    button.danger { background: var(--red); }
-
-    header {
-      background: white;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .nav {
-      max-width: 1150px;
-      margin: auto;
-      padding: 16px 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .brand {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--primary);
-    }
-
-    .brand span { color: var(--text); }
-
-    .nav-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-
-    main {
-      max-width: 1150px;
-      margin: auto;
-      padding: 28px 22px 60px;
-    }
-
-    .hero {
-      background: linear-gradient(135deg, #3157d5, #6485f2);
-      border-radius: 22px;
-      color: white;
-      padding: 42px;
-      margin-bottom: 26px;
-    }
-
-    .hero h1 {
-      margin: 0 0 12px;
-      font-size: clamp(28px, 5vw, 42px);
-      line-height: 1.15;
-    }
-
-    .hero p {
-      margin: 0;
-      max-width: 650px;
-      line-height: 1.7;
-      opacity: .94;
-    }
-
-    .search-area {
-      margin-top: 24px;
-      display: grid;
-      grid-template-columns: 1.5fr repeat(4, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
-      background: white;
-      color: var(--text);
-    }
-
-    textarea { min-height: 100px; resize: vertical; }
-
-    .section-heading {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin: 26px 0 16px;
-    }
-
-    .section-heading h2 { margin: 0; font-size: 24px; }
-
-    .muted { color: var(--muted); }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      min-height: 260px;
-      box-shadow: 0 5px 18px rgba(20, 35, 70, .035);
-    }
-
-    .card-icon {
-      width: 48px;
-      height: 48px;
-      display: grid;
-      place-items: center;
-      border-radius: 13px;
-      background: #edf1ff;
-      font-size: 25px;
-      margin-bottom: 14px;
-    }
-
-    .tag {
-      display: inline-block;
-      background: #edf1ff;
-      color: var(--primary);
-      padding: 5px 9px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 700;
-      margin-bottom: 10px;
-      width: fit-content;
-    }
-
-    .card h3 { margin: 0 0 8px; font-size: 19px; }
-
-    .card p {
-      margin: 0 0 14px;
-      line-height: 1.6;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .card-footer {
-      margin-top: auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-    }
-
-    .deadline { font-size: 12px; color: var(--muted); }
-    .deadline-status {
-      display: inline-block;
-      padding: 5px 9px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 700;
-      margin-bottom: 10px;
-      width: fit-content;
-      background: #e8f8ef;
-      color: #176b43;
-    }
-    .deadline-status.closed { background: #fff0ee; color: #9b2c20; }
-    .deadline-status.unknown { background: #eef1f7; color: var(--muted); }
-    .bookmark-button { background: #fff4d6; color: #795400; padding: 8px 11px; font-size: 12px; }
-    .bookmark-button:hover { background: #ffe8a3; }
-    .card-actions { display: flex; gap: 7px; flex-wrap: wrap; justify-content: flex-end; }
-    .stats-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 18px 0 24px; }
-    .stat-card { background: #f5f7ff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
-    .stat-card strong { display: block; font-size: 25px; color: var(--primary); margin-bottom: 5px; }
-    .stat-card span { color: var(--muted); font-size: 13px; }
-
-    .empty {
-      grid-column: 1 / -1;
-      background: white;
-      padding: 35px;
-      border: 1px dashed var(--border);
-      border-radius: 15px;
-      text-align: center;
-      color: var(--muted);
-    }
-
-    .panel {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 22px;
-      margin: 24px 0;
-    }
-
-    .panel h2 { margin-top: 0; }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 13px;
-    }
-
-    .field { display: flex; flex-direction: column; gap: 7px; }
-    .field.full { grid-column: 1 / -1; }
-    .field label { font-size: 13px; font-weight: 700; }
-
-    .form-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 15px;
-    }
-
-    .admin-list { display: grid; gap: 10px; }
-
-    .admin-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-    }
-
-    .admin-item strong { display: block; margin-bottom: 4px; }
-
-    .admin-buttons { display: flex; gap: 7px; flex-wrap: wrap; }
-
-    .admin-buttons button { padding: 8px 11px; font-size: 12px; }
-
-    .status {
-      padding: 12px;
-      border-radius: 10px;
-      margin: 12px 0;
-      background: #eef1f7;
-      color: var(--text);
-      font-size: 14px;
-    }
-
-    .status.error { background: #fff0ee; color: #9b2c20; }
-    .status.success { background: #e8f8ef; color: #176b43; }
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(12, 20, 40, .55);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 18px;
-      z-index: 30;
-    }
-
-    .modal.show { display: flex; }
-
-    .modal-content {
-      background: white;
-      width: min(650px, 100%);
-      max-height: 90vh;
-      overflow-y: auto;
-      border-radius: 18px;
-      padding: 25px;
-    }
-
-    .modal-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: start;
-      gap: 12px;
-    }
-
-    .modal-top h2 { margin-top: 0; }
-
-    .detail-text { line-height: 1.7; white-space: pre-wrap; }
-
-    .detail-list { padding-left: 20px; line-height: 1.8; }
-
-    footer {
-      text-align: center;
-      padding: 25px;
-      color: var(--muted);
-      border-top: 1px solid var(--border);
-      background: white;
-      font-size: 13px;
-    }
-
-    .about-section {
-      margin: 42px 0 12px;
-      padding: 30px;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      background: linear-gradient(135deg, #ffffff, #f0f4ff);
-      box-shadow: 0 8px 24px rgba(20, 35, 70, .04);
-    }
-    .about-section h2 { margin: 0 0 10px; font-size: 25px; }
-    .about-section > p { max-width: 760px; color: var(--muted); line-height: 1.75; margin: 0; }
-    .about-points {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 22px;
-    }
-    .about-point {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 17px;
-    }
-    .about-point strong { display: block; margin: 7px 0; }
-    .about-point p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
-    .about-icon { font-size: 23px; }
-    @media (max-width: 600px) {
-      .about-section { padding: 22px 18px; }
-      .about-points { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 850px) {
-      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-
-    @media (max-width: 600px) {
-      .nav { padding: 14px 16px; align-items: flex-start; flex-direction: column; }
-      main { padding: 18px 15px 40px; }
-      .hero { padding: 27px 22px; border-radius: 16px; }
-      .search-area, .form-grid { grid-template-columns: 1fr; }
-      .grid { grid-template-columns: 1fr; }
-      .field.full { grid-column: auto; }
-      .admin-item { align-items: flex-start; flex-direction: column; }
-      .stats-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+@media (max-width:620px){
+  .kartu{grid-template-columns:1fr}
+  .sisi{flex-direction:row;align-items:center;text-align:left}
+  .cari button{padding:0 16px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
 </head>
-
 <body>
-  <header>
-    <div class="nav">
-      <div class="brand">Beasiswa<span>Ku</span></div>
-      <div class="nav-actions">
-        <button class="secondary" id="aboutButton" type="button">Tentang</button>
-        <button class="secondary" id="adminButton">Login Admin</button>
-        <button id="logoutButton" style="display:none">Keluar Admin</button>
-      </div>
-    </div>
-  </header>
 
-  <main>
+<header class="top">
+  <div class="wrap">
+    <nav class="nav" aria-label="Utama">
+      <a class="brand" href="#">Beasiswa<span>ku</span></a>
+      <a class="link" href="#tips">Tips mendaftar</a>
+    </nav>
     <section class="hero">
-      <h1>Temukan Beasiswa<br>Untuk Masa Depanmu</h1>
-      <p>
-        Jelajahi informasi beasiswa dari berbagai penyelenggara.
-        Cari peluang yang sesuai dengan jenjang pendidikan dan kebutuhanmu.
-      </p>
-
-      <div class="search-area">
-        <input id="searchInput" type="search" placeholder="Cari nama beasiswa atau penyelenggara...">
-        <select id="levelFilter">
-          <option value="">Semua jenjang</option>
-          <option value="SMA/SMK">SMA/SMK</option>
-          <option value="D3">D3</option>
-          <option value="D4">D4</option>
-          <option value="S1">S1</option>
-          <option value="S2">S2</option>
-          <option value="S3">S3</option>
-          <option value="Umum">Umum</option>
-        </select>
-        <select id="categoryFilter">
-          <option value="">Semua kategori</option>
-          <option value="Dalam Negeri">Dalam Negeri</option>
-          <option value="Luar Negeri">Luar Negeri</option>
-          <option value="Prestasi">Prestasi</option>
-          <option value="Kurang Mampu">Kurang Mampu</option>
-          <option value="Riset">Riset</option>
-          <option value="Umum">Umum</option>
-        </select>
-        <select id="statusFilter">
-          <option value="">Semua status</option>
-          <option value="open">Masih dibuka</option>
-          <option value="closed">Sudah ditutup</option>
-          <option value="unknown">Deadline belum ditentukan</option>
-        </select>
-        <select id="sortFilter" aria-label="Urutkan beasiswa">
-          <option value="newest">Terbaru ditambahkan</option>
-          <option value="deadline">Deadline terdekat</option>
-        </select>
-        <button class="secondary" id="bookmarkFilterButton" type="button">♡ Tampilkan Favorit</button>
-      </div>
-    </section>
-
-    <div class="section-heading">
-      <div>
-        <h2>Daftar Beasiswa</h2>
-        <div class="muted" id="resultCount">Memuat data...</div>
-      </div>
-      <button class="secondary" id="refreshButton">Muat Ulang</button>
-    </div>
-
-    <section class="grid" id="scholarshipGrid">
-      <div class="empty">Sedang memuat informasi beasiswa...</div>
-    </section>
-
-    <section class="about-section" id="aboutSection">
-      <h2>Tentang BeasiswaKu</h2>
-      <p>BeasiswaKu merupakan website informasi beasiswa yang membantu pelajar dan mahasiswa menemukan peluang pendidikan. Informasi disajikan secara ringkas agar pengunjung lebih mudah mengenali program yang sesuai dan memeriksa persyaratan serta batas pendaftarannya.</p>
-      <div class="about-points">
-        <div class="about-point">
-          <div class="about-icon">🔎</div>
-          <strong>Temukan peluang</strong>
-          <p>Cari dan saring informasi berdasarkan jenjang, kategori, serta status pendaftaran.</p>
-        </div>
-        <div class="about-point">
-          <div class="about-icon">📌</div>
-          <strong>Simpan favorit</strong>
-          <p>Tandai beasiswa yang menarik agar lebih mudah ditemukan kembali di browser.</p>
-        </div>
-        <div class="about-point">
-          <div class="about-icon">📅</div>
-          <strong>Perhatikan deadline</strong>
-          <p>Lihat batas pendaftaran dan statusnya sebelum membuka informasi lebih lanjut.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel" id="loginPanel" style="display:none">
-      <h2>Login Admin</h2>
-      <p class="muted">Masuk menggunakan akun admin Supabase yang telah dibuat.</p>
-      <div class="form-grid">
-        <div class="field full">
-          <label for="loginEmail">Email admin</label>
-          <input id="loginEmail" type="email" placeholder="Email admin">
-        </div>
-        <div class="field full">
-          <label for="loginPassword">Password</label>
-          <input id="loginPassword" type="password" placeholder="Password admin">
-        </div>
-      </div>
-      <div class="form-actions">
-        <button id="loginSubmit">Masuk</button>
-        <button class="secondary" id="cancelLogin">Batal</button>
-      </div>
-      <div id="loginStatus"></div>
-    </section>
-
-    <section class="panel" id="adminPanel" style="display:none">
-      <h2>Dashboard Admin</h2>
-      <p class="muted">Tambahkan atau kelola informasi beasiswa yang ditampilkan kepada pengunjung.</p>
-      <div class="stats-grid" aria-label="Statistik beasiswa">
-        <div class="stat-card"><strong id="statTotal">0</strong><span>Total beasiswa</span></div>
-        <div class="stat-card"><strong id="statOpen">0</strong><span>Masih dibuka</span></div>
-        <div class="stat-card"><strong id="statClosed">0</strong><span>Sudah ditutup</span></div>
-      </div>
-
-      <form id="scholarshipForm">
-        <input type="hidden" id="editId">
-
-        <div class="form-grid">
-          <div class="field">
-            <label for="nama">Nama beasiswa *</label>
-            <input id="nama" required placeholder="Contoh: Beasiswa Unggulan">
-          </div>
-
-          <div class="field">
-            <label for="penyelenggara">Penyelenggara *</label>
-            <input id="penyelenggara" required placeholder="Nama penyelenggara">
-          </div>
-
-          <div class="field">
-            <label for="jenjang">Jenjang *</label>
-            <select id="jenjang" required>
-              <option value="">Pilih jenjang</option>
-              <option>SMA/SMK</option>
-              <option>D3</option>
-              <option>D4</option>
-              <option>S1</option>
-              <option>S2</option>
-              <option>S3</option>
-              <option>Umum</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="kategori">Kategori *</label>
-            <select id="kategori" required>
-              <option value="">Pilih kategori</option>
-              <option>Dalam Negeri</option>
-              <option>Luar Negeri</option>
-              <option>Prestasi</option>
-              <option>Kurang Mampu</option>
-              <option>Riset</option>
-              <option>Umum</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="icon">Ikon / Emoji</label>
-            <input id="icon" value="🎓" maxlength="8">
-          </div>
-
-          <div class="field">
-            <label for="deadline">Batas pendaftaran</label>
-            <input id="deadline" type="date">
-          </div>
-
-          <div class="field full">
-            <label for="deskripsi">Deskripsi *</label>
-            <textarea id="deskripsi" required placeholder="Jelaskan informasi beasiswa..."></textarea>
-          </div>
-
-          <div class="field full">
-            <label for="cakupan">Cakupan beasiswa</label>
-            <textarea id="cakupan" placeholder="Biaya pendidikan / uang saku / biaya hidup..."></textarea>
-          </div>
-
-          <div class="field full">
-            <label for="persyaratan">Persyaratan (satu persyaratan per baris)</label>
-            <textarea id="persyaratan" placeholder="Mahasiswa aktif&#10;Memiliki IPK minimal 3.00"></textarea>
-          </div>
-
-          <div class="field full">
-            <label for="dokumen">Dokumen yang diperlukan (satu dokumen per baris)</label>
-            <textarea id="dokumen" placeholder="Kartu mahasiswa&#10;Transkrip nilai"></textarea>
-          </div>
-
-          <div class="field full">
-            <label for="link">Link pendaftaran / informasi</label>
-            <input id="link" type="url" placeholder="https://...">
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" id="saveButton">Simpan Beasiswa</button>
-          <button type="button" class="secondary" id="resetForm">Kosongkan Form</button>
-        </div>
+      <h1>Temukan beasiswa yang cocok untukmu.</h1>
+      <p>Cari berdasarkan nama atau negara, pilih jenjang studimu, lalu lihat berapa hari lagi pendaftaran ditutup.</p>
+      <form class="cari" role="search" id="formCari">
+        <label for="q" class="sr" style="position:absolute;left:-9999px">Cari beasiswa</label>
+        <input id="q" type="search" placeholder="Contoh: Jepang, LPDP, S2" autocomplete="off">
+        <button type="submit">Cari</button>
       </form>
-
-      <div id="adminStatus"></div>
-
-      <div class="section-heading">
-        <h2>Kelola Data</h2>
-      </div>
-      <div class="admin-list" id="adminList"></div>
     </section>
-  </main>
-
-  <footer>
-    BeasiswaKu © <span id="year"></span> — Informasi peluang pendidikan
-  </footer>
-
-  <div class="modal" id="detailModal">
-    <div class="modal-content">
-      <div class="modal-top">
-        <h2 id="detailTitle">Detail Beasiswa</h2>
-        <button class="secondary" id="closeModal">Tutup</button>
-      </div>
-      <div id="detailContent"></div>
-    </div>
   </div>
-
-  <script>
-    // GANTI PROJECT URL DI BAWAH INI DENGAN PROJECT URL SUPABASE KAMU.
-    const SUPABASE_URL = "https://vsxnoogmxujvuwgehtbt.supabase.co";
-
-    // Publishable key Supabase yang kamu berikan.
-    const SUPABASE_KEY = "sb_publishable_uHKNe4XvoLTXmTBq4CjPwg_udCq7-u8";
-
-    const supabaseClient = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
-
-    let scholarships = [];
-    let isAdmin = false;
-    let showBookmarksOnly = false;
-    const BOOKMARK_STORAGE_KEY = "beasiswaKu_bookmarks_v1";
-    let bookmarkedIds = loadBookmarks();
-
-    function loadBookmarks() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(BOOKMARK_STORAGE_KEY) || "[]");
-        return new Set(Array.isArray(saved) ? saved.map(String) : []);
-      } catch (_) {
-        return new Set();
-      }
-    }
-
-    function saveBookmarks() {
-      try { localStorage.setItem(BOOKMARK_STORAGE_KEY, JSON.stringify([...bookmarkedIds])); }
-      catch (_) { /* Bookmark tetap berfungsi selama halaman terbuka. */ }
-    }
-
-    function toggleBookmark(item) {
-      const id = String(item.id);
-      if (bookmarkedIds.has(id)) bookmarkedIds.delete(id);
-      else bookmarkedIds.add(id);
-      saveBookmarks();
-      renderScholarships();
-    }
-
-    function updateAdminStats() {
-      $("statTotal").textContent = scholarships.length;
-      $("statOpen").textContent = scholarships.filter(item => getDeadlineStatus(item.deadline) === "open").length;
-      $("statClosed").textContent = scholarships.filter(item => getDeadlineStatus(item.deadline) === "closed").length;
-    }
-
-    const $ = (id) => document.getElementById(id);
-
-    $("year").textContent = new Date().getFullYear();
-
-    function showStatus(elementId, message, type = "") {
-      const element = $(elementId);
-      element.innerHTML = "";
-      if (!message) return;
-
-      const box = document.createElement("div");
-      box.className = "status " + type;
-      box.textContent = message;
-      element.appendChild(box);
-    }
-
-    function safeText(value) {
-      return String(value ?? "");
-    }
-
-    function formatDate(dateValue) {
-      if (!dateValue) return "Belum ditentukan";
-      const date = new Date(dateValue + "T00:00:00");
-      if (Number.isNaN(date.getTime())) return dateValue;
-      return date.toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-      });
-    }
-
-    function getDeadlineStatus(deadline) {
-      if (!deadline) return "unknown";
-      const today = new Date();
-      const todayString = [
-        today.getFullYear(),
-        String(today.getMonth() + 1).padStart(2, "0"),
-        String(today.getDate()).padStart(2, "0")
-      ].join("-");
-      return deadline < todayString ? "closed" : "open";
-    }
-
-    function deadlineStatusLabel(status) {
-      if (status === "closed") return "Sudah ditutup";
-      if (status === "open") return "Masih dibuka";
-      return "Deadline belum ditentukan";
-    }
-
-    function deadlineCountdown(deadline) {
-      if (!deadline) return "Hitung mundur tidak tersedia";
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const target = new Date(deadline + "T00:00:00");
-      if (Number.isNaN(target.getTime())) return "Tanggal tidak valid";
-      const days = Math.ceil((target.getTime() - today.getTime()) / 86400000);
-      if (days < 0) return "Pendaftaran telah berakhir";
-      if (days === 0) return "Deadline hari ini";
-      return days + " hari lagi";
-    }
-
-    function filteredScholarships() {
-      const keyword = $("searchInput").value.trim().toLowerCase();
-      const level = $("levelFilter").value;
-      const category = $("categoryFilter").value;
-      const status = $("statusFilter").value;
-
-      const filtered = scholarships.filter(item => {
-        const matchesKeyword =
-          safeText(item.nama).toLowerCase().includes(keyword) ||
-          safeText(item.penyelenggara).toLowerCase().includes(keyword) ||
-          safeText(item.deskripsi).toLowerCase().includes(keyword);
-
-        const matchesLevel = !level || item.jenjang === level;
-        const matchesCategory = !category || item.kategori === category;
-        const matchesStatus = !status || getDeadlineStatus(item.deadline) === status;
-        const matchesBookmark = !showBookmarksOnly || bookmarkedIds.has(String(item.id));
-        return matchesKeyword && matchesLevel && matchesCategory && matchesStatus && matchesBookmark;
-      });
-
-      if ($("sortFilter").value === "deadline") {
-        filtered.sort((a, b) => {
-          const aDate = a.deadline || "9999-12-31";
-          const bDate = b.deadline || "9999-12-31";
-          return aDate.localeCompare(bDate);
-        });
-      }
-      return filtered;
-    }
-
-    function renderScholarships() {
-      const data = filteredScholarships();
-      const grid = $("scholarshipGrid");
-      const fragment = document.createDocumentFragment();
-
-      $("resultCount").textContent = data.length + " beasiswa ditemukan";
-
-      if (!data.length) {
-        const empty = document.createElement("div");
-        empty.className = "empty";
-        empty.textContent = showBookmarksOnly
-          ? "Belum ada beasiswa favorit yang cocok dengan filter."
-          : "Belum ada beasiswa yang cocok dengan pencarianmu.";
-        fragment.appendChild(empty);
-        grid.replaceChildren(fragment);
-        return;
-      }
-
-      data.forEach(item => {
-        const card = document.createElement("article");
-        card.className = "card";
-
-        const tag = document.createElement("span");
-        tag.className = "tag";
-        tag.textContent = safeText(item.jenjang) + " • " + safeText(item.kategori);
-
-        const deadlineState = getDeadlineStatus(item.deadline);
-        const statusLabel = document.createElement("span");
-        statusLabel.className = "deadline-status" +
-          (deadlineState === "closed" ? " closed" :
-           deadlineState === "unknown" ? " unknown" : "");
-        statusLabel.textContent = deadlineStatusLabel(deadlineState);
-
-        const title = document.createElement("h3");
-        title.textContent = safeText(item.nama);
-
-        const provider = document.createElement("p");
-        provider.textContent = safeText(item.penyelenggara);
-
-        const description = document.createElement("p");
-        const descriptionText = safeText(item.deskripsi);
-        description.textContent = descriptionText.length > 145
-          ? descriptionText.slice(0, 145) + "..."
-          : descriptionText;
-
-        const footer = document.createElement("div");
-        footer.className = "card-footer";
-
-        const deadline = document.createElement("span");
-        deadline.className = "deadline";
-        deadline.textContent = item.deadline
-          ? "Deadline: " + formatDate(item.deadline) + " • " + deadlineCountdown(item.deadline)
-          : "Deadline: Belum ditentukan";
-
-        const actions = document.createElement("div");
-        actions.className = "card-actions";
-
-        const bookmarkButton = document.createElement("button");
-        bookmarkButton.className = "bookmark-button";
-        const isBookmarked = bookmarkedIds.has(String(item.id));
-        bookmarkButton.textContent = isBookmarked ? "♥ Tersimpan" : "♡ Simpan";
-        bookmarkButton.setAttribute("aria-pressed", String(isBookmarked));
-        bookmarkButton.addEventListener("click", event => {
-          event.preventDefault();
-          event.stopPropagation();
-          toggleBookmark(item);
-        });
-
-        const detailButton = document.createElement("button");
-        detailButton.textContent = "Lihat Detail";
-        detailButton.addEventListener("click", event => {
-          event.preventDefault();
-          event.stopPropagation();
-          showDetail(item);
-        });
-
-        actions.append(bookmarkButton, detailButton);
-        footer.append(deadline, actions);
-        card.append(tag, statusLabel, title, provider, description, footer);
-        fragment.appendChild(card);
-      });
-
-      // Reemplaza la lista en una sola operación tras construir las tarjetas.
-      grid.replaceChildren(fragment);
-    }
-
-    function showDetail(item) {
-      $("detailTitle").textContent = item.nama;
-      const content = $("detailContent");
-      content.innerHTML = "";
-
-      const provider = document.createElement("p");
-      provider.className = "muted";
-      provider.textContent = item.penyelenggara + " • " + item.jenjang + " • " + item.kategori;
-
-      const description = document.createElement("p");
-      description.className = "detail-text";
-      description.textContent = item.deskripsi;
-
-      const deadline = document.createElement("p");
-      deadline.innerHTML = "<strong>Batas pendaftaran:</strong> ";
-      deadline.append(document.createTextNode(formatDate(item.deadline)));
-
-      const statusLine = document.createElement("p");
-      const statusStrong = document.createElement("strong");
-      statusStrong.textContent = "Status pendaftaran: ";
-      statusLine.append(statusStrong, document.createTextNode(deadlineStatusLabel(getDeadlineStatus(item.deadline))));
-
-      content.append(provider, description, deadline, statusLine);
-
-      function addList(title, values) {
-        if (!Array.isArray(values) || !values.length) return;
-
-        const heading = document.createElement("h3");
-        heading.textContent = title;
-
-        const list = document.createElement("ul");
-        list.className = "detail-list";
-
-        values.forEach(value => {
-          const li = document.createElement("li");
-          li.textContent = value;
-          list.appendChild(li);
-        });
-
-        content.append(heading, list);
-      }
-
-      if (item.cakupan) {
-        const coverage = document.createElement("p");
-        coverage.className = "detail-text";
-        const coverageLabel = document.createElement("strong");
-        coverageLabel.textContent = "Cakupan beasiswa: ";
-        coverage.append(coverageLabel, document.createTextNode(item.cakupan));
-        content.appendChild(coverage);
-      }
-
-      addList("Persyaratan", item.persyaratan);
-      addList("Dokumen yang diperlukan", item.dokumen);
-
-      if (item.link) {
-        try {
-          const url = new URL(item.link);
-          if (url.protocol === "https:" || url.protocol === "http:") {
-            const link = document.createElement("a");
-            link.href = url.href;
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
-            link.textContent = "Buka informasi / pendaftaran";
-            link.style.display = "inline-block";
-            link.style.marginTop = "12px";
-            content.appendChild(link);
-          }
-        } catch (_) {}
-      }
-
-      $("detailModal").classList.add("show");
-      $("detailModal").setAttribute("aria-hidden", "false");
-    }
-
-    async function loadScholarships() {
-      $("scholarshipGrid").innerHTML =
-        '<div class="empty">Sedang memuat informasi beasiswa...</div>';
-
-      const { data, error } = await supabaseClient
-        .from("beasiswa")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        scholarships = [];
-        $("resultCount").textContent = "Data belum dapat dimuat";
-        $("scholarshipGrid").innerHTML =
-          '<div class="empty">Gagal mengambil data dari Supabase. Periksa Project URL, key, tabel, dan kebijakan RLS.</div>';
-        console.error(error);
-        return;
-      }
-
-      scholarships = data || [];
-      renderScholarships();
-      updateAdminStats();
-
-      if (isAdmin) renderAdminList();
-    }
-
-    function resetForm() {
-      $("scholarshipForm").reset();
-      $("editId").value = "";
-      $("icon").value = "🎓";
-      $("saveButton").textContent = "Simpan Beasiswa";
-      showStatus("adminStatus", "");
-    }
-
-    function linesToArray(value) {
-      return value
-        .split("\n")
-        .map(line => line.trim())
-        .filter(Boolean);
-    }
-
-    async function saveScholarship(event) {
-      event.preventDefault();
-
-      if (!isAdmin) {
-        showStatus("adminStatus", "Silakan login sebagai admin terlebih dahulu.", "error");
-        return;
-      }
-
-      const item = {
-        nama: $("nama").value.trim(),
-        penyelenggara: $("penyelenggara").value.trim(),
-        jenjang: $("jenjang").value,
-        kategori: $("kategori").value,
-        icon: $("icon").value.trim() || "🎓",
-        deskripsi: $("deskripsi").value.trim(),
-        cakupan: $("cakupan").value.trim(),
-        persyaratan: linesToArray($("persyaratan").value),
-        dokumen: linesToArray($("dokumen").value),
-        deadline: $("deadline").value || null,
-        link: $("link").value.trim() || null
-      };
-
-      const id = $("editId").value;
-      let result;
-
-      if (id) {
-        result = await supabaseClient
-          .from("beasiswa")
-          .update(item)
-          .eq("id", id);
-      } else {
-        result = await supabaseClient
-          .from("beasiswa")
-          .insert([item]);
-      }
-
-      if (result.error) {
-        showStatus("adminStatus", "Gagal menyimpan data: " + result.error.message, "error");
-        return;
-      }
-
-      showStatus("adminStatus", "Data beasiswa berhasil disimpan.", "success");
-      resetForm();
-      await loadScholarships();
-    }
-
-    function renderAdminList() {
-      const list = $("adminList");
-      list.innerHTML = "";
-
-      if (!scholarships.length) {
-        list.innerHTML = '<div class="empty">Belum ada data beasiswa.</div>';
-        return;
-      }
-
-      scholarships.forEach(item => {
-        const row = document.createElement("div");
-        row.className = "admin-item";
-
-        const info = document.createElement("div");
-        const title = document.createElement("strong");
-        title.textContent = item.nama;
-
-        const detail = document.createElement("span");
-        detail.className = "muted";
-        detail.textContent = item.penyelenggara + " • " + item.jenjang;
-
-        info.append(title, detail);
-
-        const buttons = document.createElement("div");
-        buttons.className = "admin-buttons";
-
-        const editButton = document.createElement("button");
-        editButton.className = "secondary";
-        editButton.textContent = "Edit";
-        editButton.addEventListener("click", () => editScholarship(item));
-
-        const deleteButton = document.createElement("button");
-        deleteButton.className = "danger";
-        deleteButton.textContent = "Hapus";
-        deleteButton.addEventListener("click", () => deleteScholarship(item));
-
-        buttons.append(editButton, deleteButton);
-        row.append(info, buttons);
-        list.appendChild(row);
-      });
-    }
-
-    function editScholarship(item) {
-      $("editId").value = item.id;
-      $("nama").value = item.nama || "";
-      $("penyelenggara").value = item.penyelenggara || "";
-      $("jenjang").value = item.jenjang || "";
-      $("kategori").value = item.kategori || "";
-      $("icon").value = item.icon || "🎓";
-      $("deskripsi").value = item.deskripsi || "";
-      $("cakupan").value = item.cakupan || "";
-      $("persyaratan").value = Array.isArray(item.persyaratan) ? item.persyaratan.join("\n") : "";
-      $("dokumen").value = Array.isArray(item.dokumen) ? item.dokumen.join("\n") : "";
-      $("deadline").value = item.deadline || "";
-      $("link").value = item.link || "";
-      $("saveButton").textContent = "Perbarui Beasiswa";
-
-      $("scholarshipForm").scrollIntoView({ behavior: "smooth" });
-    }
-
-    async function deleteScholarship(item) {
-      if (!isAdmin) return;
-
-      const confirmed = confirm('Hapus beasiswa "' + item.nama + '"?');
-      if (!confirmed) return;
-
-      const { error } = await supabaseClient
-        .from("beasiswa")
-        .delete()
-        .eq("id", item.id);
-
-      if (error) {
-        showStatus("adminStatus", "Gagal menghapus data: " + error.message, "error");
-        return;
-      }
-
-      showStatus("adminStatus", "Data berhasil dihapus.", "success");
-      await loadScholarships();
-    }
-
-    async function loginAdmin() {
-      const email = $("loginEmail").value.trim();
-      const password = $("loginPassword").value;
-
-      if (!email || !password) {
-        showStatus("loginStatus", "Masukkan email dan password.", "error");
-        return;
-      }
-
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) {
-        showStatus("loginStatus", "Login gagal: " + error.message, "error");
-        return;
-      }
-
-      isAdmin = Boolean(data.session);
-      $("loginPanel").style.display = "none";
-      $("adminPanel").style.display = isAdmin ? "block" : "none";
-      $("adminButton").style.display = isAdmin ? "none" : "inline-block";
-      $("logoutButton").style.display = isAdmin ? "inline-block" : "none";
-
-      await loadScholarships();
-      renderAdminList();
-    }
-
-    async function logoutAdmin() {
-      await supabaseClient.auth.signOut();
-      isAdmin = false;
-      $("adminPanel").style.display = "none";
-      $("loginPanel").style.display = "none";
-      $("adminButton").style.display = "inline-block";
-      $("logoutButton").style.display = "none";
-      resetForm();
-      renderScholarships();
-    }
-
-    $("searchInput").addEventListener("input", renderScholarships);
-    $("levelFilter").addEventListener("input", renderScholarships);
-    $("categoryFilter").addEventListener("change", renderScholarships);
-    $("statusFilter").addEventListener("change", renderScholarships);
-    $("sortFilter").addEventListener("change", renderScholarships);
-    $("bookmarkFilterButton").addEventListener("click", () => {
-      showBookmarksOnly = !showBookmarksOnly;
-      $("bookmarkFilterButton").textContent = showBookmarksOnly ? "♡ Tampilkan Semua" : "♡ Tampilkan Favorit";
-      renderScholarships();
-    });
-    $("refreshButton").addEventListener("click", loadScholarships);
-    $("scholarshipForm").addEventListener("submit", saveScholarship);
-    $("resetForm").addEventListener("click", resetForm);
-    $("loginSubmit").addEventListener("click", loginAdmin);
-    $("logoutButton").addEventListener("click", logoutAdmin);
-
-    $("aboutButton").addEventListener("click", () => {
-      $("aboutSection").scrollIntoView({ behavior: "smooth", block: "start" });
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="alat">
+      <fieldset>
+        <legend>Jenjang</legend>
+        <label class="chip"><input type="radio" name="jenjang" value="Semua" checked><span>Semua</span></label>
+        <label class="chip"><input type="radio" name="jenjang" value="S1"><span>S1</span></label>
+        <label class="chip"><input type="radio" name="jenjang" value="S2"><span>S2</span></label>
+        <label class="chip"><input type="radio" name="jenjang" value="S3"><span>S3</span></label>
+      </fieldset>
+      <fieldset>
+        <legend>Lokasi</legend>
+        <label class="chip"><input type="radio" name="lokasi" value="Semua" checked><span>Semua</span></label>
+        <label class="chip"><input type="radio" name="lokasi" value="Dalam negeri"><span>Dalam negeri</span></label>
+        <label class="chip"><input type="radio" name="lokasi" value="Luar negeri"><span>Luar negeri</span></label>
+      </fieldset>
+      <label class="chip"><input type="checkbox" id="hanyaBuka"><span>Hanya yang masih buka</span></label>
+    </div>
+
+    <p class="hitung" id="hitung" aria-live="polite"></p>
+    <ul class="daftar" id="daftar"></ul>
+
+    <section class="tips" id="tips">
+      <h2>Tips sebelum mendaftar</h2>
+      <ol>
+        <li>Baca panduan resmi sampai habis. Syarat IPK, usia, dan bahasa sering berbeda tiap tahun.</li>
+        <li>Siapkan skor bahasa (IELTS, TOEFL, atau JLPT) lebih awal, karena jadwal tesnya bisa penuh.</li>
+        <li>Minta surat rekomendasi minimal sebulan sebelum tenggat.</li>
+        <li>Tulis esai dengan cerita yang spesifik tentang dirimu, bukan kalimat umum.</li>
+      </ol>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Beasiswaku</strong> – dibuat untuk membantu pelajar Indonesia menemukan peluang belajar.</p>
+    <p>Data di halaman ini hanya contoh. Selalu cek tanggal dan syarat terbaru di situs resmi penyelenggara.</p>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   DATA BEASISWA – ubah bagian ini untuk menambah/mengganti isi.
+   tutup  : tanggal penutupan, format TAHUN-BULAN-TANGGAL
+   jenjang: gabungan "S1", "S2", "S3"
+   lokasi : "Dalam negeri" atau "Luar negeri"
+   ============================================================ */
+const BEASISWA = [
+  {
+    nama: "LPDP Reguler",
+    penyelenggara: "Kementerian Keuangan RI",
+    deskripsi: "Biaya kuliah, tunjangan hidup, dan biaya riset untuk studi S2 dan S3 di dalam maupun luar negeri.",
+    jenjang: ["S2","S3"], lokasi: "Dalam negeri", negara: "Indonesia & luar negeri",
+    tutup: "2027-03-31", url: "https://lpdp.kemenkeu.go.id"
+  },
+  {
+    nama: "KIP Kuliah",
+    penyelenggara: "Kemendikbudristek",
+    deskripsi: "Bantuan biaya pendidikan dan biaya hidup bagi lulusan SMA/SMK berprestasi dari keluarga kurang mampu.",
+    jenjang: ["S1"], lokasi: "Dalam negeri", negara: "Indonesia",
+    tutup: "2027-02-28", url: "https://kip-kuliah.kemdikbud.go.id"
+  },
+  {
+    nama: "Chevening",
+    penyelenggara: "Pemerintah Inggris",
+    deskripsi: "Beasiswa satu tahun untuk program S2 di universitas Inggris, ditujukan bagi calon pemimpin masa depan.",
+    jenjang: ["S2"], lokasi: "Luar negeri", negara: "Inggris",
+    tutup: "2026-11-03", url: "https://www.chevening.org"
+  },
+  {
+    nama: "Australia Awards",
+    penyelenggara: "Pemerintah Australia",
+    deskripsi: "Beasiswa penuh S2 dan S3 di Australia dengan tunjangan hidup dan tiket pulang-pergi.",
+    jenjang: ["S2","S3"], lokasi: "Luar negeri", negara: "Australia",
+    tutup: "2027-04-30", url: "https://www.australiaawardsindonesia.org"
+  },
+  {
+    nama: "MEXT (Monbukagakusho)",
+    penyelenggara: "Pemerintah Jepang",
+    deskripsi: "Beasiswa penuh untuk S1, S2, dan S3 di Jepang, termasuk tunjangan bulanan dan bebas biaya kuliah.",
+    jenjang: ["S1","S2","S3"], lokasi: "Luar negeri", negara: "Jepang",
+    tutup: "2027-05-15", url: "https://www.id.emb-japan.go.jp"
+  },
+  {
+    nama: "Global Korea Scholarship (GKS)",
+    penyelenggara: "Pemerintah Korea Selatan",
+    deskripsi: "Beasiswa penuh dengan kursus bahasa Korea satu tahun, tunjangan hidup, dan biaya kuliah.",
+    jenjang: ["S1","S2","S3"], lokasi: "Luar negeri", negara: "Korea Selatan",
+    tutup: "2027-03-10", url: "https://www.studyinkorea.go.kr"
+  },
+  {
+    nama: "Beasiswa Unggulan",
+    penyelenggara: "Kemendikbudristek",
+    deskripsi: "Beasiswa untuk mahasiswa dan pegawai berprestasi di berbagai jenjang di perguruan tinggi dalam negeri.",
+    jenjang: ["S1","S2","S3"], lokasi: "Dalam negeri", negara: "Indonesia",
+    tutup: "2026-12-20", url: "https://beasiswaunggulan.kemdikbud.go.id"
+  },
+  {
+    nama: "Fulbright",
+    penyelenggara: "AMINEF & Pemerintah AS",
+    deskripsi: "Beasiswa S2 dan S3 di universitas Amerika Serikat dengan pendampingan sebelum keberangkatan.",
+    jenjang: ["S2","S3"], lokasi: "Luar negeri", negara: "Amerika Serikat",
+    tutup: "2026-10-15", url: "https://www.aminef.or.id"
+  }
+];
+
+const $ = (s) => document.querySelector(s);
+const daftar = $("#daftar"), hitung = $("#hitung"), q = $("#q");
+const hariIni = new Date(); hariIni.setHours(0,0,0,0);
+
+function sisaHari(tgl){
+  const [y,m,d] = tgl.split("-").map(Number);
+  return Math.round((new Date(y, m-1, d) - hariIni) / 86400000);
+}
+function tglIndo(tgl){
+  const [y,m,d] = tgl.split("-").map(Number);
+  return new Date(y, m-1, d).toLocaleDateString("id-ID", {day:"numeric", month:"long", year:"numeric"});
+}
+function el(tag, cls, teks){
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (teks !== undefined) e.textContent = teks;
+  return e;
+}
+function nilai(name){ return document.querySelector(`input[name="${name}"]:checked`).value; }
+
+function render(){
+  const kata = q.value.trim().toLowerCase();
+  const jenjang = nilai("jenjang"), lokasi = nilai("lokasi");
+  const hanyaBuka = $("#hanyaBuka").checked;
+
+  const hasil = BEASISWA
+    .map(b => ({...b, sisa: sisaHari(b.tutup)}))
+    .filter(b => !kata || (b.nama+" "+b.penyelenggara+" "+b.deskripsi+" "+b.negara+" "+b.jenjang.join(" ")).toLowerCase().includes(kata))
+    .filter(b => jenjang === "Semua" || b.jenjang.includes(jenjang))
+    .filter(b => lokasi === "Semua" || b.lokasi === lokasi)
+    .filter(b => !hanyaBuka || b.sisa >= 0)
+    .sort((a,b) => {
+      const ta = a.sisa < 0, tb = b.sisa < 0;
+      return ta !== tb ? ta - tb : a.sisa - b.sisa;
     });
 
-    $("adminButton").addEventListener("click", () => {
-      $("loginPanel").style.display = "block";
-      $("loginPanel").scrollIntoView({ behavior: "smooth" });
+  daftar.replaceChildren();
+  hitung.textContent = `Menampilkan ${hasil.length} dari ${BEASISWA.length} beasiswa`;
+
+  if (!hasil.length){
+    const k = el("li","kosong");
+    k.append(el("p","", "Belum ada beasiswa yang cocok dengan pencarianmu."));
+    const tombol = el("button","", "Hapus semua filter");
+    tombol.type = "button";
+    tombol.addEventListener("click", () => {
+      q.value = "";
+      document.querySelectorAll('input[value="Semua"]').forEach(i => i.checked = true);
+      $("#hanyaBuka").checked = false;
+      render();
     });
+    k.append(tombol);
+    daftar.append(k);
+    return;
+  }
 
-    $("cancelLogin").addEventListener("click", () => {
-      $("loginPanel").style.display = "none";
-      showStatus("loginStatus", "");
-    });
+  for (const b of hasil){
+    const li = el("li", "kartu" + (b.sisa < 0 ? " tutup" : b.sisa <= 30 ? " segera" : ""));
 
-    $("closeModal").addEventListener("click", () => {
-      $("detailModal").classList.remove("show");
-      $("detailModal").setAttribute("aria-hidden", "true");
-    });
+    const kiri = el("div");
+    kiri.append(el("h2","", b.nama), el("p","penyelenggara", b.penyelenggara), el("p","", b.deskripsi));
+    const tag = el("ul","tag");
+    [...b.jenjang, b.lokasi, b.negara].forEach(t => tag.append(el("li","", t)));
+    kiri.append(tag);
 
-    $("detailModal").addEventListener("click", event => {
-      if (event.target === $("detailModal")) {
-        $("detailModal").classList.remove("show");
-      }
-    });
-
-    async function checkSession() {
-      const { data } = await supabaseClient.auth.getSession();
-      isAdmin = Boolean(data.session);
-
-      if (isAdmin) {
-        $("adminPanel").style.display = "block";
-        $("adminButton").style.display = "none";
-        $("logoutButton").style.display = "inline-block";
-      }
-
-      await loadScholarships();
+    const kanan = el("div","sisi");
+    const sisa = el("div","sisa");
+    if (b.sisa < 0){
+      sisa.append(el("strong","", "Sudah tutup"), el("small","", tglIndo(b.tutup)));
+    } else if (b.sisa === 0){
+      sisa.append(el("strong","", "Hari ini"), el("small","", "batas terakhir"));
+    } else {
+      sisa.append(el("strong","", `${b.sisa} hari`), el("small","", "tutup " + tglIndo(b.tutup)));
     }
+    const a = el("a","btn", "Buka situs resmi");
+    a.href = b.url; a.target = "_blank"; a.rel = "noopener noreferrer";
+    kanan.append(sisa, a);
 
-    supabaseClient.auth.onAuthStateChange((_event, session) => {
-      isAdmin = Boolean(session);
-      $("adminPanel").style.display = isAdmin ? "block" : "none";
-      $("adminButton").style.display = isAdmin ? "none" : "inline-block";
-      $("logoutButton").style.display = isAdmin ? "inline-block" : "none";
-      if (isAdmin) renderAdminList();
-    });
+    li.append(kiri, kanan);
+    daftar.append(li);
+  }
+}
 
-    checkSession();
-  </script>
+$("#formCari").addEventListener("submit", e => { e.preventDefault(); render(); });
+q.addEventListener("input", render);
+document.querySelectorAll(".alat input").forEach(i => i.addEventListener("change", render));
+render();
+</script>
 </body>
 </html>
