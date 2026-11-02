@@ -150,7 +150,12 @@ footer p{margin:0 0 6px}
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="config.js"></script>
+<script>
+window.BEASISWAKU_CONFIG = {
+  SUPABASE_URL: "https://vsxnoogmxujvuwgehtbt.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_uHKNe4XvoLTXmTBq4CjPwg_udCq7-u8"
+};
+</script>
 <script>
 /* Data beasiswa diambil dari Supabase (tabel "beasiswa").
    Kelola isinya lewat halaman admin.html. */
