@@ -396,16 +396,7 @@
 
       <div class="search-area">
         <input id="searchInput" type="search" placeholder="Cari nama beasiswa atau penyelenggara...">
-        <select id="levelFilter">
-          <option value="">Semua jenjang</option>
-          <option value="SMA/SMK">SMA/SMK</option>
-          <option value="D3">D3</option>
-          <option value="D4">D4</option>
-          <option value="S1">S1</option>
-          <option value="S2">S2</option>
-          <option value="S3">S3</option>
-          <option value="Umum">Umum</option>
-        </select>
+        <input id="levelFilter" type="search" placeholder="Filter jenjang (mis. S1, SMA, semua jenjang)">
         <select id="categoryFilter">
           <option value="">Semua kategori</option>
           <option value="Dalam Negeri">Dalam Negeri</option>
@@ -700,7 +691,7 @@
           safeText(item.penyelenggara).toLowerCase().includes(keyword) ||
           safeText(item.deskripsi).toLowerCase().includes(keyword);
 
-        const matchesLevel = !level || item.jenjang === level;
+        const matchesLevel = !level || safeText(item.jenjang).toLowerCase().includes(level.toLowerCase());
         const matchesCategory = !category || item.kategori === category;
         const matchesStatus = !status || getDeadlineStatus(item.deadline) === status;
         const matchesBookmark = !showBookmarksOnly || bookmarkedIds.has(String(item.id));
@@ -732,10 +723,6 @@
       data.forEach(item => {
         const card = document.createElement("article");
         card.className = "card";
-
-        const icon = document.createElement("div");
-        icon.className = "card-icon";
-        icon.textContent = item.icon || "🎓";
 
         const tag = document.createElement("span");
         tag.className = "tag";
@@ -781,7 +768,7 @@
 
         actions.append(bookmarkButton, detailButton);
         footer.append(deadline, actions);
-        card.append(icon, tag, statusLabel, title, provider, description, footer);
+        card.append(tag, statusLabel, title, provider, description, footer);
         grid.appendChild(card);
       });
     }
@@ -878,7 +865,6 @@
     function resetForm() {
       $("scholarshipForm").reset();
       $("editId").value = "";
-      $("icon").value = "🎓";
       $("saveButton").textContent = "Simpan Beasiswa";
       showStatus("adminStatus", "");
     }
@@ -981,7 +967,6 @@
       $("penyelenggara").value = item.penyelenggara || "";
       $("jenjang").value = item.jenjang || "";
       $("kategori").value = item.kategori || "";
-      $("icon").value = item.icon || "🎓";
       $("deskripsi").value = item.deskripsi || "";
       $("persyaratan").value = Array.isArray(item.persyaratan) ? item.persyaratan.join("\n") : "";
       $("dokumen").value = Array.isArray(item.dokumen) ? item.dokumen.join("\n") : "";
