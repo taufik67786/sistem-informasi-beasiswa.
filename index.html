@@ -549,6 +549,11 @@
           </div>
 
           <div class="field full">
+            <label for="cakupan">Cakupan beasiswa</label>
+            <textarea id="cakupan" placeholder="Biaya pendidikan / uang saku / biaya hidup..."></textarea>
+          </div>
+
+          <div class="field full">
             <label for="persyaratan">Persyaratan (satu persyaratan per baris)</label>
             <textarea id="persyaratan" placeholder="Mahasiswa aktif&#10;Memiliki IPK minimal 3.00"></textarea>
           </div>
@@ -855,6 +860,15 @@
         content.append(heading, list);
       }
 
+      if (item.cakupan) {
+        const coverage = document.createElement("p");
+        coverage.className = "detail-text";
+        const coverageLabel = document.createElement("strong");
+        coverageLabel.textContent = "Cakupan beasiswa: ";
+        coverage.append(coverageLabel, document.createTextNode(item.cakupan));
+        content.appendChild(coverage);
+      }
+
       addList("Persyaratan", item.persyaratan);
       addList("Dokumen yang diperlukan", item.dokumen);
 
@@ -933,6 +947,7 @@
         kategori: $("kategori").value,
         icon: $("icon").value.trim() || "🎓",
         deskripsi: $("deskripsi").value.trim(),
+        cakupan: $("cakupan").value.trim(),
         persyaratan: linesToArray($("persyaratan").value),
         dokumen: linesToArray($("dokumen").value),
         deadline: $("deadline").value || null,
@@ -1013,6 +1028,7 @@
       $("kategori").value = item.kategori || "";
       $("icon").value = item.icon || "🎓";
       $("deskripsi").value = item.deskripsi || "";
+      $("cakupan").value = item.cakupan || "";
       $("persyaratan").value = Array.isArray(item.persyaratan) ? item.persyaratan.join("\n") : "";
       $("dokumen").value = Array.isArray(item.dokumen) ? item.dokumen.join("\n") : "";
       $("deadline").value = item.deadline || "";
