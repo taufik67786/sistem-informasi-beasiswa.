@@ -108,7 +108,7 @@
     .search-area {
       margin-top: 24px;
       display: grid;
-      grid-template-columns: 1fr 190px;
+      grid-template-columns: 1.5fr repeat(4, minmax(0, 1fr));
       gap: 10px;
     }
 
@@ -195,6 +195,26 @@
     }
 
     .deadline { font-size: 12px; color: var(--muted); }
+    .deadline-status {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      width: fit-content;
+      background: #e8f8ef;
+      color: #176b43;
+    }
+    .deadline-status.closed { background: #fff0ee; color: #9b2c20; }
+    .deadline-status.unknown { background: #eef1f7; color: var(--muted); }
+    .bookmark-button { background: #fff4d6; color: #795400; padding: 8px 11px; font-size: 12px; }
+    .bookmark-button:hover { background: #ffe8a3; }
+    .card-actions { display: flex; gap: 7px; flex-wrap: wrap; justify-content: flex-end; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 18px 0 24px; }
+    .stat-card { background: #f5f7ff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+    .stat-card strong { display: block; font-size: 25px; color: var(--primary); margin-bottom: 5px; }
+    .stat-card span { color: var(--muted); font-size: 13px; }
 
     .empty {
       grid-column: 1 / -1;
@@ -307,6 +327,36 @@
       font-size: 13px;
     }
 
+    .about-section {
+      margin: 42px 0 12px;
+      padding: 30px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: linear-gradient(135deg, #ffffff, #f0f4ff);
+      box-shadow: 0 8px 24px rgba(20, 35, 70, .04);
+    }
+    .about-section h2 { margin: 0 0 10px; font-size: 25px; }
+    .about-section > p { max-width: 760px; color: var(--muted); line-height: 1.75; margin: 0; }
+    .about-points {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+    .about-point {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 17px;
+    }
+    .about-point strong { display: block; margin: 7px 0; }
+    .about-point p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .about-icon { font-size: 23px; }
+    @media (max-width: 600px) {
+      .about-section { padding: 22px 18px; }
+      .about-points { grid-template-columns: 1fr; }
+    }
+
     @media (max-width: 850px) {
       .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
@@ -319,6 +369,7 @@
       .grid { grid-template-columns: 1fr; }
       .field.full { grid-column: auto; }
       .admin-item { align-items: flex-start; flex-direction: column; }
+      .stats-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -328,6 +379,7 @@
     <div class="nav">
       <div class="brand">Beasiswa<span>Ku</span></div>
       <div class="nav-actions">
+        <button class="secondary" id="aboutButton" type="button">Tentang</button>
         <button class="secondary" id="adminButton">Login Admin</button>
         <button id="logoutButton" style="display:none">Keluar Admin</button>
       </div>
@@ -354,6 +406,26 @@
           <option value="S3">S3</option>
           <option value="Umum">Umum</option>
         </select>
+        <select id="categoryFilter">
+          <option value="">Semua kategori</option>
+          <option value="Dalam Negeri">Dalam Negeri</option>
+          <option value="Luar Negeri">Luar Negeri</option>
+          <option value="Prestasi">Prestasi</option>
+          <option value="Kurang Mampu">Kurang Mampu</option>
+          <option value="Riset">Riset</option>
+          <option value="Umum">Umum</option>
+        </select>
+        <select id="statusFilter">
+          <option value="">Semua status</option>
+          <option value="open">Masih dibuka</option>
+          <option value="closed">Sudah ditutup</option>
+          <option value="unknown">Deadline belum ditentukan</option>
+        </select>
+        <select id="sortFilter" aria-label="Urutkan beasiswa">
+          <option value="newest">Terbaru ditambahkan</option>
+          <option value="deadline">Deadline terdekat</option>
+        </select>
+        <button class="secondary" id="bookmarkFilterButton" type="button">♡ Tampilkan Favorit</button>
       </div>
     </section>
 
@@ -367,6 +439,28 @@
 
     <section class="grid" id="scholarshipGrid">
       <div class="empty">Sedang memuat informasi beasiswa...</div>
+    </section>
+
+    <section class="about-section" id="aboutSection">
+      <h2>Tentang BeasiswaKu</h2>
+      <p>BeasiswaKu merupakan website informasi beasiswa yang membantu pelajar dan mahasiswa menemukan peluang pendidikan. Informasi disajikan secara ringkas agar pengunjung lebih mudah mengenali program yang sesuai dan memeriksa persyaratan serta batas pendaftarannya.</p>
+      <div class="about-points">
+        <div class="about-point">
+          <div class="about-icon">🔎</div>
+          <strong>Temukan peluang</strong>
+          <p>Cari dan saring informasi berdasarkan jenjang, kategori, serta status pendaftaran.</p>
+        </div>
+        <div class="about-point">
+          <div class="about-icon">📌</div>
+          <strong>Simpan favorit</strong>
+          <p>Tandai beasiswa yang menarik agar lebih mudah ditemukan kembali di browser.</p>
+        </div>
+        <div class="about-point">
+          <div class="about-icon">📅</div>
+          <strong>Perhatikan deadline</strong>
+          <p>Lihat batas pendaftaran dan statusnya sebelum membuka informasi lebih lanjut.</p>
+        </div>
+      </div>
     </section>
 
     <section class="panel" id="loginPanel" style="display:none">
@@ -392,6 +486,11 @@
     <section class="panel" id="adminPanel" style="display:none">
       <h2>Dashboard Admin</h2>
       <p class="muted">Tambahkan atau kelola informasi beasiswa yang ditampilkan kepada pengunjung.</p>
+      <div class="stats-grid" aria-label="Statistik beasiswa">
+        <div class="stat-card"><strong id="statTotal">0</strong><span>Total beasiswa</span></div>
+        <div class="stat-card"><strong id="statOpen">0</strong><span>Masih dibuka</span></div>
+        <div class="stat-card"><strong id="statClosed">0</strong><span>Sudah ditutup</span></div>
+      </div>
 
       <form id="scholarshipForm">
         <input type="hidden" id="editId">
@@ -508,6 +607,37 @@
 
     let scholarships = [];
     let isAdmin = false;
+    let showBookmarksOnly = false;
+    const BOOKMARK_STORAGE_KEY = "beasiswaKu_bookmarks_v1";
+    let bookmarkedIds = loadBookmarks();
+
+    function loadBookmarks() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(BOOKMARK_STORAGE_KEY) || "[]");
+        return new Set(Array.isArray(saved) ? saved.map(String) : []);
+      } catch (_) {
+        return new Set();
+      }
+    }
+
+    function saveBookmarks() {
+      try { localStorage.setItem(BOOKMARK_STORAGE_KEY, JSON.stringify([...bookmarkedIds])); }
+      catch (_) { /* Bookmark tetap berfungsi selama halaman terbuka. */ }
+    }
+
+    function toggleBookmark(item) {
+      const id = String(item.id);
+      if (bookmarkedIds.has(id)) bookmarkedIds.delete(id);
+      else bookmarkedIds.add(id);
+      saveBookmarks();
+      renderScholarships();
+    }
+
+    function updateAdminStats() {
+      $("statTotal").textContent = scholarships.length;
+      $("statOpen").textContent = scholarships.filter(item => getDeadlineStatus(item.deadline) === "open").length;
+      $("statClosed").textContent = scholarships.filter(item => getDeadlineStatus(item.deadline) === "closed").length;
+    }
 
     const $ = (id) => document.getElementById(id);
 
@@ -539,19 +669,62 @@
       });
     }
 
+    function getDeadlineStatus(deadline) {
+      if (!deadline) return "unknown";
+      const today = new Date();
+      const todayString = [
+        today.getFullYear(),
+        String(today.getMonth() + 1).padStart(2, "0"),
+        String(today.getDate()).padStart(2, "0")
+      ].join("-");
+      return deadline < todayString ? "closed" : "open";
+    }
+
+    function deadlineStatusLabel(status) {
+      if (status === "closed") return "Sudah ditutup";
+      if (status === "open") return "Masih dibuka";
+      return "Deadline belum ditentukan";
+    }
+
+    function deadlineCountdown(deadline) {
+      if (!deadline) return "Hitung mundur tidak tersedia";
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const target = new Date(deadline + "T00:00:00");
+      if (Number.isNaN(target.getTime())) return "Tanggal tidak valid";
+      const days = Math.ceil((target.getTime() - today.getTime()) / 86400000);
+      if (days < 0) return "Pendaftaran telah berakhir";
+      if (days === 0) return "Deadline hari ini";
+      return days + " hari lagi";
+    }
+
     function filteredScholarships() {
       const keyword = $("searchInput").value.trim().toLowerCase();
       const level = $("levelFilter").value;
+      const category = $("categoryFilter").value;
+      const status = $("statusFilter").value;
 
-      return scholarships.filter(item => {
+      const filtered = scholarships.filter(item => {
         const matchesKeyword =
           safeText(item.nama).toLowerCase().includes(keyword) ||
           safeText(item.penyelenggara).toLowerCase().includes(keyword) ||
           safeText(item.deskripsi).toLowerCase().includes(keyword);
 
         const matchesLevel = !level || item.jenjang === level;
-        return matchesKeyword && matchesLevel;
+        const matchesCategory = !category || item.kategori === category;
+        const matchesStatus = !status || getDeadlineStatus(item.deadline) === status;
+        const matchesBookmark = !showBookmarksOnly || bookmarkedIds.has(String(item.id));
+        return matchesKeyword && matchesLevel && matchesCategory && matchesStatus && matchesBookmark;
       });
+
+      if ($("sortFilter").value === "deadline") {
+        filtered.sort((a, b) => {
+          const aDate = a.deadline || "9999-12-31";
+          const bDate = b.deadline || "9999-12-31";
+          return aDate.localeCompare(bDate);
+        });
+      }
+      return filtered;
     }
 
     function renderScholarships() {
@@ -578,6 +751,11 @@
         tag.className = "tag";
         tag.textContent = item.jenjang + " • " + item.kategori;
 
+        const status = getDeadlineStatus(item.deadline);
+        const statusLabel = document.createElement("span");
+        statusLabel.className = "deadline-status" + (status === "closed" ? " closed" : status === "unknown" ? " unknown" : "");
+        statusLabel.textContent = deadlineStatusLabel(status);
+
         const title = document.createElement("h3");
         title.textContent = item.nama;
 
@@ -593,14 +771,27 @@
 
         const deadline = document.createElement("span");
         deadline.className = "deadline";
-        deadline.textContent = "Deadline: " + formatDate(item.deadline);
+        deadline.textContent = item.deadline
+          ? "Deadline: " + formatDate(item.deadline) + " • " + deadlineCountdown(item.deadline)
+          : "Deadline: Belum ditentukan";
+
+        const actions = document.createElement("div");
+        actions.className = "card-actions";
+
+        const bookmarkButton = document.createElement("button");
+        bookmarkButton.className = "bookmark-button";
+        const isBookmarked = bookmarkedIds.has(String(item.id));
+        bookmarkButton.textContent = isBookmarked ? "♥ Tersimpan" : "♡ Simpan";
+        bookmarkButton.setAttribute("aria-pressed", String(isBookmarked));
+        bookmarkButton.addEventListener("click", () => toggleBookmark(item));
 
         const detailButton = document.createElement("button");
         detailButton.textContent = "Lihat Detail";
         detailButton.addEventListener("click", () => showDetail(item));
 
-        footer.append(deadline, detailButton);
-        card.append(icon, tag, title, provider, description, footer);
+        actions.append(bookmarkButton, detailButton);
+        footer.append(deadline, actions);
+        card.append(icon, tag, statusLabel, title, provider, description, footer);
         grid.appendChild(card);
       });
     }
@@ -622,7 +813,12 @@
       deadline.innerHTML = "<strong>Batas pendaftaran:</strong> ";
       deadline.append(document.createTextNode(formatDate(item.deadline)));
 
-      content.append(provider, description, deadline);
+      const statusLine = document.createElement("p");
+      const statusStrong = document.createElement("strong");
+      statusStrong.textContent = "Status pendaftaran: ";
+      statusLine.append(statusStrong, document.createTextNode(deadlineStatusLabel(getDeadlineStatus(item.deadline))));
+
+      content.append(provider, description, deadline, statusLine);
 
       function addList(title, values) {
         if (!Array.isArray(values) || !values.length) return;
@@ -684,6 +880,7 @@
 
       scholarships = data || [];
       renderScholarships();
+      updateAdminStats();
 
       if (isAdmin) renderAdminList();
     }
@@ -869,11 +1066,23 @@
 
     $("searchInput").addEventListener("input", renderScholarships);
     $("levelFilter").addEventListener("change", renderScholarships);
+    $("categoryFilter").addEventListener("change", renderScholarships);
+    $("statusFilter").addEventListener("change", renderScholarships);
+    $("sortFilter").addEventListener("change", renderScholarships);
+    $("bookmarkFilterButton").addEventListener("click", () => {
+      showBookmarksOnly = !showBookmarksOnly;
+      $("bookmarkFilterButton").textContent = showBookmarksOnly ? "♡ Tampilkan Semua" : "♡ Tampilkan Favorit";
+      renderScholarships();
+    });
     $("refreshButton").addEventListener("click", loadScholarships);
     $("scholarshipForm").addEventListener("submit", saveScholarship);
     $("resetForm").addEventListener("click", resetForm);
     $("loginSubmit").addEventListener("click", loginAdmin);
     $("logoutButton").addEventListener("click", logoutAdmin);
+
+    $("aboutButton").addEventListener("click", () => {
+      $("aboutSection").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
 
     $("adminButton").addEventListener("click", () => {
       $("loginPanel").style.display = "block";
