@@ -396,7 +396,16 @@
 
       <div class="search-area">
         <input id="searchInput" type="search" placeholder="Cari nama beasiswa atau penyelenggara...">
-        <input id="levelFilter" type="search" placeholder="Filter jenjang (mis. S1, SMA, semua jenjang)">
+        <select id="levelFilter">
+          <option value="">Semua jenjang</option>
+          <option value="SMA/SMK">SMA/SMK</option>
+          <option value="D3">D3</option>
+          <option value="D4">D4</option>
+          <option value="S1">S1</option>
+          <option value="S2">S2</option>
+          <option value="S3">S3</option>
+          <option value="Umum">Umum</option>
+        </select>
         <select id="categoryFilter">
           <option value="">Semua kategori</option>
           <option value="Dalam Negeri">Dalam Negeri</option>
@@ -498,14 +507,18 @@
           </div>
 
           <div class="field">
-  <label for="jenjang">Jenjang *</label>
-  <input
-    type="text"
-    id="jenjang"
-    placeholder="Contoh: SMA/SMK, S1–S3, atau Semua jenjang"
-    required
-  />
-</div>
+            <label for="jenjang">Jenjang *</label>
+            <select id="jenjang" required>
+              <option value="">Pilih jenjang</option>
+              <option>SMA/SMK</option>
+              <option>D3</option>
+              <option>D4</option>
+              <option>S1</option>
+              <option>S2</option>
+              <option>S3</option>
+              <option>Umum</option>
+            </select>
+          </div>
 
           <div class="field">
             <label for="kategori">Kategori *</label>
@@ -519,6 +532,12 @@
               <option>Umum</option>
             </select>
           </div>
+
+          <div class="field">
+            <label for="icon">Ikon / Emoji</label>
+            <input id="icon" value="🎓" maxlength="8">
+          </div>
+
           <div class="field">
             <label for="deadline">Batas pendaftaran</label>
             <input id="deadline" type="date">
@@ -691,7 +710,7 @@
           safeText(item.penyelenggara).toLowerCase().includes(keyword) ||
           safeText(item.deskripsi).toLowerCase().includes(keyword);
 
-        const matchesLevel = !level || safeText(item.jenjang).toLowerCase().includes(level.toLowerCase());
+        const matchesLevel = !level || item.jenjang === level;
         const matchesCategory = !category || item.kategori === category;
         const matchesStatus = !status || getDeadlineStatus(item.deadline) === status;
         const matchesBookmark = !showBookmarksOnly || bookmarkedIds.has(String(item.id));
@@ -711,12 +730,18 @@
     function renderScholarships() {
       const data = filteredScholarships();
       const grid = $("scholarshipGrid");
+      const fragment = document.createDocumentFragment();
 
       $("resultCount").textContent = data.length + " beasiswa ditemukan";
-      grid.innerHTML = "";
 
       if (!data.length) {
-        grid.innerHTML = '<div class="empty">Belum ada beasiswa yang cocok dengan pencarianmu.</div>';
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = showBookmarksOnly
+          ? "Belum ada beasiswa favorit yang cocok dengan filter."
+          : "Belum ada beasiswa yang cocok dengan pencarianmu.";
+        fragment.appendChild(empty);
+        grid.replaceChildren(fragment);
         return;
       }
 
@@ -726,22 +751,26 @@
 
         const tag = document.createElement("span");
         tag.className = "tag";
-        tag.textContent = item.jenjang + " • " + item.kategori;
+        tag.textContent = safeText(item.jenjang) + " • " + safeText(item.kategori);
 
-        const status = getDeadlineStatus(item.deadline);
+        const deadlineState = getDeadlineStatus(item.deadline);
         const statusLabel = document.createElement("span");
-        statusLabel.className = "deadline-status" + (status === "closed" ? " closed" : status === "unknown" ? " unknown" : "");
-        statusLabel.textContent = deadlineStatusLabel(status);
+        statusLabel.className = "deadline-status" +
+          (deadlineState === "closed" ? " closed" :
+           deadlineState === "unknown" ? " unknown" : "");
+        statusLabel.textContent = deadlineStatusLabel(deadlineState);
 
         const title = document.createElement("h3");
-        title.textContent = item.nama;
+        title.textContent = safeText(item.nama);
 
         const provider = document.createElement("p");
-        provider.textContent = item.penyelenggara;
+        provider.textContent = safeText(item.penyelenggara);
 
         const description = document.createElement("p");
-        description.textContent = safeText(item.deskripsi).slice(0, 145) +
-          (safeText(item.deskripsi).length > 145 ? "..." : "");
+        const descriptionText = safeText(item.deskripsi);
+        description.textContent = descriptionText.length > 145
+          ? descriptionText.slice(0, 145) + "..."
+          : descriptionText;
 
         const footer = document.createElement("div");
         footer.className = "card-footer";
@@ -760,17 +789,28 @@
         const isBookmarked = bookmarkedIds.has(String(item.id));
         bookmarkButton.textContent = isBookmarked ? "♥ Tersimpan" : "♡ Simpan";
         bookmarkButton.setAttribute("aria-pressed", String(isBookmarked));
-        bookmarkButton.addEventListener("click", () => toggleBookmark(item));
+        bookmarkButton.addEventListener("click", event => {
+          event.preventDefault();
+          event.stopPropagation();
+          toggleBookmark(item);
+        });
 
         const detailButton = document.createElement("button");
         detailButton.textContent = "Lihat Detail";
-        detailButton.addEventListener("click", () => showDetail(item));
+        detailButton.addEventListener("click", event => {
+          event.preventDefault();
+          event.stopPropagation();
+          showDetail(item);
+        });
 
         actions.append(bookmarkButton, detailButton);
         footer.append(deadline, actions);
         card.append(tag, statusLabel, title, provider, description, footer);
-        grid.appendChild(card);
+        fragment.appendChild(card);
       });
+
+      // Reemplaza la lista en una sola operación tras construir las tarjetas.
+      grid.replaceChildren(fragment);
     }
 
     function showDetail(item) {
@@ -835,6 +875,7 @@
       }
 
       $("detailModal").classList.add("show");
+      $("detailModal").setAttribute("aria-hidden", "false");
     }
 
     async function loadScholarships() {
@@ -865,6 +906,7 @@
     function resetForm() {
       $("scholarshipForm").reset();
       $("editId").value = "";
+      $("icon").value = "🎓";
       $("saveButton").textContent = "Simpan Beasiswa";
       showStatus("adminStatus", "");
     }
@@ -885,16 +927,18 @@
       }
 
       const item = {
-  nama: $("nama").value.trim(),
-  penyelenggara: $("penyelenggara").value.trim(),
-  jenjang: $("jenjang").value.trim(),
-  kategori: $("kategori").value,
-  deskripsi: $("deskripsi").value.trim(),
-  persyaratan: linesToArray($("persyaratan").value),
-  dokumen: linesToArray($("dokumen").value),
-  deadline: $("deadline").value || null,
-  link: $("link").value.trim() || null
-};
+        nama: $("nama").value.trim(),
+        penyelenggara: $("penyelenggara").value.trim(),
+        jenjang: $("jenjang").value,
+        kategori: $("kategori").value,
+        icon: $("icon").value.trim() || "🎓",
+        deskripsi: $("deskripsi").value.trim(),
+        persyaratan: linesToArray($("persyaratan").value),
+        dokumen: linesToArray($("dokumen").value),
+        deadline: $("deadline").value || null,
+        link: $("link").value.trim() || null
+      };
+
       const id = $("editId").value;
       let result;
 
@@ -967,6 +1011,7 @@
       $("penyelenggara").value = item.penyelenggara || "";
       $("jenjang").value = item.jenjang || "";
       $("kategori").value = item.kategori || "";
+      $("icon").value = item.icon || "🎓";
       $("deskripsi").value = item.deskripsi || "";
       $("persyaratan").value = Array.isArray(item.persyaratan) ? item.persyaratan.join("\n") : "";
       $("dokumen").value = Array.isArray(item.dokumen) ? item.dokumen.join("\n") : "";
@@ -1038,7 +1083,7 @@
     }
 
     $("searchInput").addEventListener("input", renderScholarships);
-    $("levelFilter").addEventListener("change", renderScholarships);
+    $("levelFilter").addEventListener("input", renderScholarships);
     $("categoryFilter").addEventListener("change", renderScholarships);
     $("statusFilter").addEventListener("change", renderScholarships);
     $("sortFilter").addEventListener("change", renderScholarships);
@@ -1069,6 +1114,7 @@
 
     $("closeModal").addEventListener("click", () => {
       $("detailModal").classList.remove("show");
+      $("detailModal").setAttribute("aria-hidden", "true");
     });
 
     $("detailModal").addEventListener("click", event => {
